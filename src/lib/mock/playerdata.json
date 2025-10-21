@@ -1,0 +1,104 @@
+{
+  "id": "plr_haaland_418560",
+  "slug": "erling-haaland",
+  "identifiers": {
+    "full_name": "Erling Braut Haaland",
+    "known_as": "Erling Haaland",
+    "name_native": "Erling Braut Håland",
+    "shirt_name": "HAALAND",
+    "jersey_number": 9,
+    "dob": "2000-07-21",
+    "pob": "Leeds, England",
+    "nationalities": ["NOR"],
+    "citizenships": ["Norway"],
+    "height_cm": 195,
+    "weight_kg": 94,
+    "preferred_foot": "left",
+    "positions_primary": ["CF"],
+    "positions_secondary": [],
+    "dominant_role": "Attacker",
+    "bio_short": "Norwegian centre-forward known for pace, strength and elite finishing.",
+    "headshot": { "url": "https://.../haaland.jpg", "alt": "Erling Haaland headshot" }
+  },
+  "club_career": {
+    "current_club": {
+      "name": "Manchester City",
+      "country": "England",
+      "league": "Premier League",
+      "squad_number": 9,
+      "joined_date": "2022-07-01",
+      "contract_start": "2022-07-01",
+      "contract_end": "2034-06-30",
+      "last_extension": "2025-01-17"
+    },
+    "youth_clubs": [{ "club": "Bryne", "from": "2005", "to": "2016" }],
+    "senior_clubs": [
+      { "club": "Bryne", "country": "Norway", "league": "Eliteserien", "from": "2016-01-01", "to": "2017-12-31", "apps": 16, "goals": 0, "assists": 0 }
+    ]
+  },
+  "national_team": {
+    "current_status": "active",
+    "teams": [
+      { "level": "Senior", "caps": 46, "goals": 51, "from": "2019", "to": "present" }
+    ]
+  },
+  "contract_agent_market": {
+    "agent": "Rafaela Pimenta",
+    "market_value": {
+      "amount_eur": 180000000,
+      "last_updated": "2025-05-30",
+      "source": "https://www.transfermarkt.com/erling-haaland/profil/spieler/418560"
+    },
+    "outfitter": "Nike"
+  },
+  "season_stats": [
+    {
+      "season": "2024/25",
+      "team": "Manchester City",
+      "competition": "Premier League",
+      "minutes": 0,
+      "apps": 0,
+      "starts": 0,
+      "goals": 0,
+      "assists": 0,
+      "xG": 0.0,
+      "xAG": 0.0
+    }
+  ],
+  "fbref_scouting": {
+    "sample_window": "last_365_days",
+    "position_bucket": "FW",
+    "percentiles": { "npxG_per90": 99, "xAG_per90": 95 },
+    "source": "https://fbref.com/en/players/d70ce98e/scout/365_m2/Lionel-Messi-Scouting-Report"
+  },
+  "transfers": [
+    {
+      "date": "2022-07-01",
+      "from_club": "Borussia Dortmund",
+      "to_club": "Manchester City",
+      "fee_eur": 60000000,
+      "fee_type": "permanent",
+      "source": "https://www.transfermarkt.com/erling-haaland/transfers/spieler/418560"
+    }
+  ],
+  "injuries": [
+    {
+      "type": "Ankle injury",
+      "from": "2023-11-17",
+      "to": "2023-11-24",
+      "days_out": 8,
+      "matches_missed": 2,
+      "source": "https://www.transfermarkt.com/erling-haaland/verletzungen/spieler/418560"
+    }
+  ],
+  "honours": {
+    "club_titles": [{ "competition": "Premier League", "seasons": ["2022/23"] }],
+    "individual_awards": [{ "name": "UEFA Men's Player of the Year", "year": 2023 }]
+  },
+  "links_external": {
+    "transfermarkt_id": "418560",
+    "fbref_id": "d70ce98e",
+    "premier_league_profile_url": "https://www.premierleague.com/players/..."
+  },
+  "seo": { "meta_title": "Erling Haaland – Profile & Stats", "meta_description": "…" }
+}

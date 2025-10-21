@@ -1,0 +1,407 @@
+{
+  "generated_at": "2025-10-16T05:10:46.222565Z",
+  "players": [
+    {
+      "id": "do-sy-huy-1998",
+      "full_name": "Đỗ Sỹ Huy",
+      "common_name": "Đỗ Sỹ Huy",
+      "date_of_birth": "1998-04-16",
+      "place_of_birth": "Hà Nội, Vietnam",
+      "nationality": "Vietnam",
+      "height_m": 1.8,
+      "weight_kg": null,
+      "positions": [
+        "Goalkeeper"
+      ],
+      "preferred_foot": null,
+      "current_club": {
+        "name": "PVF-CAND FC",
+        "league": "V.League 1",
+        "country": "Vietnam"
+      },
+      "club_number": 1,
+      "contract": {
+        "status": "permanent",
+        "joined": "2025-07-27",
+        "on_loan_from": null
+      },
+      "youth_clubs": [
+        "Hà Nội FC"
+      ],
+      "tournament_numbers": [
+        {
+          "tournament": "Asian Games Hangzhou 2022 (played 2023) – Vietnam Olympic",
+          "number": 1
+        }
+      ],
+      "image_local": "/mnt/data/chandung22tuyenthu1.jpg",
+      "sources": [
+        "https://www.transfermarkt.us/sy-huy-do/profil/spieler/508242",
+        "https://en.wikipedia.org/wiki/%C4%90%E1%BB%97_S%E1%BB%B9_Huy"
+      ]
+    },
+    {
+      "id": "quan-van-chuan-2001",
+      "full_name": "Quan Văn Chuẩn",
+      "common_name": "Quan Văn Chuẩn",
+      "date_of_birth": "2001-01-07",
+      "place_of_birth": "Chiêm Hóa, Tuyên Quang, Vietnam",
+      "nationality": "Vietnam",
+      "height_m": 1.81,
+      "weight_kg": null,
+      "positions": [
+        "Goalkeeper"
+      ],
+      "preferred_foot": null,
+      "current_club": {
+        "name": "Hà Nội FC",
+        "league": "V.League 1",
+        "country": "Vietnam"
+      },
+      "club_number": 1,
+      "contract": {
+        "status": "permanent",
+        "joined": null,
+        "on_loan_from": null
+      },
+      "youth_clubs": [
+        "Hà Nội FC"
+      ],
+      "tournament_numbers": [
+        {
+          "tournament": "Asian Games Hangzhou 2022 (played 2023) – Vietnam Olympic",
+          "number": 22
+        }
+      ],
+      "image_local": "/mnt/data/chandung22tuyenthu2.jpg",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Quan_V%C4%83n_Chu%E1%BA%A9n",
+        "https://www.transfermarkt.us/van-chuan-quan/profil/spieler/806540",
+        "https://vpf.vn/player/quan-van-chuan/"
+      ]
+    },
+    {
+      "id": "cao-van-binh-2005",
+      "full_name": "Cao Văn Bình",
+      "common_name": "Cao Văn Bình",
+      "date_of_birth": "2005-01-08",
+      "place_of_birth": "Diễn Châu, Nghệ An, Vietnam",
+      "nationality": "Vietnam",
+      "height_m": 1.83,
+      "weight_kg": 80,
+      "positions": [
+        "Goalkeeper"
+      ],
+      "preferred_foot": "right",
+      "current_club": {
+        "name": "Sông Lam Nghệ An (SLNA)",
+        "league": "V.League 1",
+        "country": "Vietnam"
+      },
+      "club_number": 1,
+      "contract": {
+        "status": "permanent",
+        "joined": "2023-10-01",
+        "on_loan_from": null
+      },
+      "youth_clubs": [
+        "Sông Lam Nghệ An"
+      ],
+      "tournament_numbers": [
+        {
+          "tournament": "Asian Games Hangzhou 2022 (played 2023) – Vietnam Olympic",
+          "number": 13
+        }
+      ],
+      "image_local": "/mnt/data/chandung22tuyenthu3.jpg",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Cao_V%C4%83n_B%C3%ACnh",
+        "https://www.transfermarkt.us/van-binh-cao/profil/spieler/1032657",
+        "https://vpf.vn/team/song-lam-nghe-an/",
+        "https://danviet.vn/sao-tre-slna-cao-van-binh-cao-1m83-len-doi-mot-tu-nam-18-tuoi-d140380.html"
+      ]
+    },
+    {
+      "id": "vo-minh-trong-2001",
+      "full_name": "Võ Minh Trọng",
+      "common_name": "Võ Minh Trọng",
+      "date_of_birth": "2001-10-24",
+      "place_of_birth": "Ô Môn, Cần Thơ, Vietnam",
+      "nationality": "Vietnam",
+      "height_m": 1.7,
+      "weight_kg": 59,
+      "positions": [
+        "Left-back"
+      ],
+      "preferred_foot": "left",
+      "current_club": {
+        "name": "Becamex TP.HCM (formerly Becamex Bình Dương)",
+        "league": "V.League 1",
+        "country": "Vietnam"
+      },
+      "club_number": 17,
+      "contract": {
+        "status": "permanent",
+        "joined": "2023-10-06",
+        "on_loan_from": null
+      },
+      "youth_clubs": [
+        "Đồng Tháp"
+      ],
+      "tournament_numbers": [
+        {
+          "tournament": "Asian Games Hangzhou 2022 (played 2023) – Vietnam Olympic",
+          "number": 3
+        }
+      ],
+      "image_local": "/mnt/data/chandung22tuyenthu4.jpg",
+      "sources": [
+        "https://en.wikipedia.org/wiki/V%C3%B5_Minh_Tr%E1%BB%8Dng",
+        "https://www.transfermarkt.com/minh-trong-vo/profil/spieler/989319",
+        "https://vpf.vn/team/becamex-tphcm/",
+        "https://bongdaplus.vn/v-league/gioi-thieu-clb-becamex-tp-hcm-tai-v-league-2025-26-co-hoi-nao-cho-cuu-vuong-4766702508.html"
+      ]
+    },
+    {
+      "id": "nguyen-duc-anh-2003",
+      "full_name": "Nguyễn Đức Anh",
+      "common_name": "Nguyễn Đức Anh",
+      "date_of_birth": "2003-05-16",
+      "place_of_birth": "Mỹ Đức, Hà Nội, Vietnam",
+      "nationality": "Vietnam",
+      "height_m": 1.75,
+      "weight_kg": null,
+      "positions": [
+        "Centre-back",
+        "Left-back"
+      ],
+      "preferred_foot": null,
+      "current_club": {
+        "name": "SHB Đà Nẵng",
+        "league": "V.League 1",
+        "country": "Vietnam"
+      },
+      "club_number": 15,
+      "contract": {
+        "status": "loan",
+        "joined": null,
+        "on_loan_from": "Hà Nội FC"
+      },
+      "youth_clubs": [
+        "Hà Nội FC"
+      ],
+      "tournament_numbers": [
+        {
+          "tournament": "Asian Games Hangzhou 2022 (played 2023) – Vietnam Olympic",
+          "number": 21
+        }
+      ],
+      "image_local": "/mnt/data/chandung22tuyenthu5.jpg",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Nguy%E1%BB%85n_%C4%90%E1%BB%A9c_Anh",
+        "https://www.transfermarkt.us/duc-anh-nguyen/profil/spieler/1118870"
+      ]
+    },
+    {
+      "id": "phan-tuan-tai-2001",
+      "full_name": "Phan Tuấn Tài",
+      "common_name": "Phan Tuấn Tài",
+      "date_of_birth": "2001-01-07",
+      "place_of_birth": "Đắk Lắk, Vietnam",
+      "nationality": "Vietnam",
+      "height_m": 1.76,
+      "weight_kg": null,
+      "positions": [
+        "Left-back",
+        "Left midfield",
+        "Centre-back"
+      ],
+      "preferred_foot": "left",
+      "current_club": {
+        "name": "Thể Công – Viettel FC",
+        "league": "V.League 1",
+        "country": "Vietnam"
+      },
+      "club_number": 12,
+      "contract": {
+        "status": "permanent",
+        "joined": "2022-07-01",
+        "on_loan_from": null
+      },
+      "youth_clubs": [
+        "Viettel Youth"
+      ],
+      "tournament_numbers": [
+        {
+          "tournament": "Asian Games Hangzhou 2022 (played 2023) – Vietnam Olympic",
+          "number": 2
+        }
+      ],
+      "image_local": "/mnt/data/chandung22tuyenthu6.jpg",
+      "sources": [
+        "https://www.transfermarkt.us/tuan-tai-phan/profil/spieler/989898"
+      ]
+    },
+    {
+      "id": "le-nguyen-hoang-2005",
+      "full_name": "Lê Nguyên Hoàng",
+      "common_name": "Lê Nguyên Hoàng",
+      "date_of_birth": "2005-02-14",
+      "place_of_birth": "Cửa Lò, Nghệ An, Vietnam",
+      "nationality": "Vietnam",
+      "height_m": 1.77,
+      "weight_kg": 68,
+      "positions": [
+        "Centre-back"
+      ],
+      "preferred_foot": null,
+      "current_club": {
+        "name": "Sông Lam Nghệ An (SLNA)",
+        "league": "V.League 1",
+        "country": "Vietnam"
+      },
+      "club_number": 3,
+      "contract": {
+        "status": "permanent",
+        "joined": "2023-10-01",
+        "on_loan_from": null
+      },
+      "youth_clubs": [
+        "Sông Lam Nghệ An"
+      ],
+      "tournament_numbers": [
+        {
+          "tournament": "Asian Games Hangzhou 2022 (played 2023) – Vietnam Olympic",
+          "number": 5
+        }
+      ],
+      "image_local": "/mnt/data/chandung22tuyenthu7.jpg",
+      "sources": [
+        "https://en.wikipedia.org/wiki/L%C3%AA_Nguy%C3%AAn_Ho%C3%A0ng",
+        "https://vpf.vn/player/le-nguyen-hoang/",
+        "https://vpf.vn/team/song-lam-nghe-an/",
+        "https://www.transfermarkt.com/nguyen-hoang-le/profil/spieler/1103341"
+      ]
+    },
+    {
+      "id": "nguyen-manh-hung-2005",
+      "full_name": "Nguyễn Mạnh Hưng",
+      "common_name": "Nguyễn Mạnh Hưng",
+      "date_of_birth": "2005-08-08",
+      "place_of_birth": "Thanh Hà, Hải Dương, Vietnam",
+      "nationality": "Vietnam",
+      "height_m": 1.77,
+      "weight_kg": 75,
+      "positions": [
+        "Centre-back"
+      ],
+      "preferred_foot": null,
+      "current_club": {
+        "name": "Hồng Lĩnh Hà Tĩnh (on loan)",
+        "league": "V.League 1",
+        "country": "Vietnam"
+      },
+      "club_number": 66,
+      "contract": {
+        "status": "loan",
+        "joined": "2025-08-07",
+        "on_loan_from": "Thể Công – Viettel FC"
+      },
+      "youth_clubs": [
+        "Viettel"
+      ],
+      "tournament_numbers": [
+        {
+          "tournament": "Asian Games Hangzhou 2022 (played 2023) – Vietnam Olympic",
+          "number": 4
+        }
+      ],
+      "image_local": "/mnt/data/chandung22tuyenthu8.jpg",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Nguy%E1%BB%85n_M%E1%BA%A1nh_H%C6%B0ng",
+        "https://vpf.vn/player/nguyen-manh-hung/",
+        "https://vpf.vn/team/the-cong-viettel/"
+      ]
+    },
+    {
+      "id": "nguyen-hong-phuc-2003",
+      "full_name": "Nguyễn Hồng Phúc",
+      "common_name": "Nguyễn Hồng Phúc",
+      "date_of_birth": "2003-05-31",
+      "place_of_birth": "Hải Dương, Vietnam",
+      "nationality": "Vietnam",
+      "height_m": 1.78,
+      "weight_kg": 66,
+      "positions": [
+        "Right-back"
+      ],
+      "preferred_foot": null,
+      "current_club": {
+        "name": "SHB Đà Nẵng",
+        "league": "V.League 1",
+        "country": "Vietnam"
+      },
+      "club_number": 23,
+      "contract": {
+        "status": "permanent",
+        "joined": "2025-08-04",
+        "on_loan_from": null
+      },
+      "youth_clubs": [
+        "Viettel"
+      ],
+      "tournament_numbers": [
+        {
+          "tournament": "Asian Games Hangzhou 2022 (played 2023) – Vietnam Olympic",
+          "number": 16
+        }
+      ],
+      "image_local": "/mnt/data/chandung22tuyenthu9.jpg",
+      "sources": [
+        "https://www.transfermarkt.us/hong-phuc-nguyen/leistungsdaten/spieler/879326/wettbewerb/FS",
+        "https://vpf.vn/player/nguyen-hong-phuc/",
+        "https://www.transfermarkt.us/hong-phuc-nguyen/nationalmannschaft/spieler/879326/verein_id/113132"
+      ]
+    },
+    {
+      "id": "dinh-xuan-tien-2003",
+      "full_name": "Đinh Xuân Tiến",
+      "common_name": "Đinh Xuân Tiến",
+      "date_of_birth": "2003-01-10",
+      "place_of_birth": "Nam Đàn, Nghệ An, Vietnam",
+      "nationality": "Vietnam",
+      "height_m": 1.71,
+      "weight_kg": null,
+      "positions": [
+        "Attacking midfield",
+        "Central midfield",
+        "Centre-forward"
+      ],
+      "preferred_foot": "right",
+      "current_club": {
+        "name": "Thể Công – Viettel FC (on loan)",
+        "league": "V.League 1",
+        "country": "Vietnam"
+      },
+      "club_number": 19,
+      "contract": {
+        "status": "loan",
+        "joined": "2025-07-16",
+        "on_loan_from": "Sông Lam Nghệ An"
+      },
+      "youth_clubs": [
+        "Sông Lam Nghệ An"
+      ],
+      "tournament_numbers": [
+        {
+          "tournament": "Asian Games Hangzhou 2022 (played 2023) – Vietnam Olympic",
+          "number": 11
+        }
+      ],
+      "image_local": "/mnt/data/chandung22tuyenthu10.jpg",
+      "sources": [
+        "https://www.transfermarkt.us/xuan-tien-dinh/profil/spieler/984117"
+      ]
+    }
+  ]
+}
