@@ -1,0 +1,103 @@
+# ============================================
+# SIGNAUTHENTICS DEPLOYMENT ENVIRONMENT
+# ============================================
+# Copy this file to project root as .env and fill in real values
+# NEVER commit .env to git
+
+# ============================================
+# DATABASE (PostgreSQL 16)
+# ============================================
+# Ref: https://www.postgresql.org/docs/current/
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=CHANGE_ME_STRONG_PASSWORD
+POSTGRES_DB=signauthentics
+POSTGRES_HOST=db
+POSTGRES_PORT=5432
+DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+
+# ============================================
+# MINIO (S3-Compatible Object Storage)
+# ============================================
+# Ref: https://min.io/docs/minio/linux/index.html
+MINIO_ROOT_USER=minhmice
+MINIO_ROOT_PASSWORD=minh2908
+MINIO_BUCKET=signauthentics-media
+MINIO_ENDPOINT=http://minio:9000
+MINIO_REGION=us-east-1
+MINIO_INTERNAL_ENDPOINT=http://minio:9000
+
+# ============================================
+# IMGPROXY (Image Optimization & Signing)
+# ============================================
+# Ref: https://docs.imgproxy.net/configuration
+# SECURITY: Generate strong random keys for production!
+# Generate with: openssl rand -hex 32
+IMGPROXY_KEY=CHANGE_ME_HEX_64_CHARS_MIN
+IMGPROXY_SALT=CHANGE_ME_HEX_64_CHARS_MIN
+
+# Signature security
+# Ref: https://docs.imgproxy.net/usage/signing_url
+IMGPROXY_SIGNATURE_SIZE=32
+IMGPROXY_ENFORCE_THUMBNAIL=false
+IMGPROXY_ALLOW_ORIGIN=*
+
+# S3 config for imgproxy
+IMGPROXY_USE_S3=true
+IMGPROXY_S3_ENDPOINT=${MINIO_INTERNAL_ENDPOINT}
+IMGPROXY_S3_REGION=${MINIO_REGION}
+AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER}
+AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD}
+
+# ============================================
+# REDIS / VALKEY (Cache & Job Queue)
+# ============================================
+REDIS_HOST=cache
+REDIS_PORT=6379
+REDIS_PASSWORD=
+REDIS_URL=redis://${REDIS_HOST}:${REDIS_PORT}
+
+# ============================================
+# MEILISEARCH (Full-Text Search)
+# ============================================
+# Ref: https://www.meilisearch.com/docs/reference/api/overview
+MEILI_MASTER_KEY=CHANGE_ME_STRONG_MASTER_KEY
+MEILI_HOST=http://meilisearch:7700
+MEILI_ENV=production
+
+# ============================================
+# NEXT.JS APPLICATION
+# ============================================
+NODE_ENV=production
+PORT=3000
+HOST=0.0.0.0
+
+# Public URLs (exposed via Cloudflare Tunnel)
+NEXT_PUBLIC_APP_URL=https://app.minhmice.com
+NEXT_PUBLIC_API_URL=https://backend.minhmice.com
+NEXT_PUBLIC_IMGPROXY_URL=https://img.minhmice.com
+
+# Internal service URLs
+INTERNAL_IMGPROXY_URL=http://imgproxy:8080
+INTERNAL_MINIO_URL=http://minio:9000
+
+# ============================================
+# CLOUDFLARE TUNNEL
+# ============================================
+# Ref: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/
+TUNNEL_CREDENTIALS_FILE=/etc/cloudflared/credentials.json
+
+# ============================================
+# DEPLOYMENT & CI/CD
+# ============================================
+GHCR_IMAGE=ghcr.io/minhmice/signauthentics
+IMAGE_TAG=latest
+DEPLOY_DIR=~/signauthentics-stack
+
+# ============================================
+# SECURITY NOTES
+# ============================================
+# 1. Generate IMGPROXY_KEY & IMGPROXY_SALT: openssl rand -hex 32
+# 2. Generate MEILI_MASTER_KEY: openssl rand -base64 32
+# 3. Use strong POSTGRES_PASSWORD (min 16 chars)
+# 4. NEVER expose MinIO ports publicly (only via imgproxy)
+

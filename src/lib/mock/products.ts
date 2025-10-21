@@ -3,7 +3,6 @@ export type Product = {
   slug: string;
   title: string;
   playerId: string;
-  clubId: string;
   category: string;
   rarity: "standard" | "limited" | "rare" | "ultra";
   limitedQty?: number;
@@ -18,7 +17,6 @@ export const products: Product[] = Array.from({ length: 12 }).map((_, i) => ({
   slug: `product-${i + 1}`,
   title: `Signed Jersey #${i + 1}`,
   playerId: `pl${(i % 8) + 1}`,
-  clubId: `c${(i % 8) + 1}`,
   category: i % 2 ? "Shirt" : "Ball",
   rarity: ([("standard"), ("limited"), ("rare"), ("ultra")] as const)[i % 4],
   limitedQty: i % 3 === 0 ? 100 : undefined,

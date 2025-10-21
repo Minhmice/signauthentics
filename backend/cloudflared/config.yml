@@ -1,0 +1,99 @@
+# ============================================
+# CLOUDFLARE TUNNEL CONFIGURATION
+# ============================================
+# Ref: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/configure-tunnels/local-management/configuration-file/
+# Ref: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/routing-to-tunnel/
+
+# Tunnel UUID will be in credentials.json
+# Get tunnel ID: cloudflared tunnel list
+
+# ============================================
+# INGRESS RULES
+# ============================================
+# Routes traffic from public hostnames to internal services
+# Rules are evaluated top-to-bottom, first match wins
+
+ingress:
+  # ==========================================
+  # Frontend Application
+  # ==========================================
+  # https://app.minhmice.com → Next.js app (pages + static)
+  - hostname: app.minhmice.com
+    service: http://web:3000
+    originRequest:
+      noTLSVerify: true
+      connectTimeout: 30s
+      httpHostHeader: app.minhmice.com
+
+  # ==========================================
+  # Backend API
+  # ==========================================
+  # https://backend.minhmice.com → Next.js API routes (/api/*)
+  - hostname: backend.minhmice.com
+    service: http://web:3000
+    originRequest:
+      noTLSVerify: true
+      connectTimeout: 30s
+      httpHostHeader: backend.minhmice.com
+
+  # ==========================================
+  # Image Proxy
+  # ==========================================
+  # https://img.minhmice.com → imgproxy service
+  - hostname: img.minhmice.com
+    service: http://imgproxy:8080
+    originRequest:
+      noTLSVerify: true
+      connectTimeout: 60s
+      # Longer timeout for image processing
+      keepAliveTimeout: 90s
+      httpHostHeader: img.minhmice.com
+
+  # ==========================================
+  # Catch-all (required)
+  # ==========================================
+  # Default 404 for any other requests
+  - service: http_status:404
+
+# ============================================
+# TUNNEL SETTINGS
+# ============================================
+# Ref: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/configure-tunnels/tunnel-health/
+
+# Logging
+logfile: /var/log/cloudflared.log
+loglevel: info
+
+# Metrics (optional - for monitoring)
+# metrics: 127.0.0.1:9090
+
+# Protocol
+protocol: quic
+
+# Retries
+retries: 3
+
+# Grace period for shutdown
+grace-period: 30s
+
+# ============================================
+# SETUP INSTRUCTIONS
+# ============================================
+# 1. Create tunnel (once):
+#    cloudflared tunnel create signauthentics-tunnel
+#
+# 2. This generates credentials.json - save it to ./cloudflared/credentials.json
+#
+# 3. Configure DNS (for each hostname):
+#    cloudflared tunnel route dns signauthentics-tunnel app.minhmice.com
+#    cloudflared tunnel route dns signauthentics-tunnel backend.minhmice.com
+#    cloudflared tunnel route dns signauthentics-tunnel img.minhmice.com
+#
+# 4. Run tunnel:
+#    docker compose up -d cloudflared
+#
+# 5. Verify:
+#    curl https://app.minhmice.com
+#
+# Ref: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/
+

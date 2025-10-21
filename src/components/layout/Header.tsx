@@ -18,7 +18,6 @@ export default function Header() {
           {[
             ["Home", "/"],
             ["Players", "/players"],
-            ["Clubs", "/clubs"],
             ["Collections", "/collections"],
             ["Auctions", "/auctions"],
             ["News", "/news"],
@@ -38,7 +37,7 @@ export default function Header() {
             <Search className="size-5 text-zinc-500 dark:text-zinc-400" />
             <Input 
               aria-label="Search" 
-              placeholder="Search players, clubs..." 
+              placeholder="Search players, collections..." 
               className="h-10 w-72" 
             />
           </div>

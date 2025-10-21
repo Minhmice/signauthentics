@@ -11,4 +11,6 @@ export function rarityToBadge(rarity: string) {
   }
 }
 
-
+export function getRarityLabel(rarity: string): string {
+  return rarityToBadge(rarity).label;
+}

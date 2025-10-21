@@ -1,38 +1,24 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { DotsIndicator } from "@/components/shared/DotsIndicator";
 import { playersSliderData, type PlayerSlide } from "@/lib/mock/playersSlider";
+import { useAutoPlay } from "@/hooks/useAutoPlay";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function PlayersSlider() {
   const [activeSlide, setActiveSlide] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  
   const slides: PlayerSlide[] = playersSliderData;
 
-  // Auto-slide functionality
-  useEffect(() => {
-    if (isPaused) return;
-    
-    const interval = setInterval(() => {
-      setActiveSlide((prev) => (prev + 1) % slides.length);
-    }, 5000); // Change slide every 5 seconds
+  const nextSlide = () => setActiveSlide((prev) => (prev + 1) % slides.length);
+  const prevSlide = () => setActiveSlide((prev) => (prev - 1 + slides.length) % slides.length);
 
-    return () => clearInterval(interval);
-  }, [slides.length, isPaused]);
-
-  const nextSlide = () => {
-    setActiveSlide((prev) => (prev + 1) % slides.length);
-  };
-
-  const prevSlide = () => {
-    setActiveSlide((prev) => (prev - 1 + slides.length) % slides.length);
-  };
-
-  const goToSlide = (index: number) => {
-    setActiveSlide(index);
-  };
+  const { pause, resume } = useAutoPlay({
+    onNext: nextSlide,
+    interval: 5000,
+    enabled: true
+  });
 
   if (!slides || slides.length === 0) {
     return <div className="p-8 text-center">Loading players...</div>;
@@ -55,28 +41,30 @@ export default function PlayersSlider() {
     <section className="overflow-hidden md:pt-20 mb-11 md:mb-24">
       {/* Header */}
       <div className="pt-12 pb-4 md:pb-8">
-        <div className="container flex items-center justify-center md:justify-end">
+        <div className="container flex items-center justify-center md:justify-end gap-9">
           <span className="text-2xl uppercase md:text-3xl lg:text-4xl font-bold">Players</span>
-          <button 
-            onClick={prevSlide} 
-            className="hidden ml-9 md:block p-2 hover:bg-white/20 rounded-full transition-colors"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-          <button 
-            onClick={nextSlide} 
-            className="hidden ml-5 md:block p-2 hover:bg-white/20 rounded-full transition-colors"
-          >
-            <ChevronRight className="w-6 h-6" />
-          </button>
+          <div className="hidden md:flex items-center gap-5">
+            <button 
+              onClick={prevSlide} 
+              className="p-2 hover:bg-white/20 rounded-full transition-colors flex items-center justify-center"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+            <button 
+              onClick={nextSlide} 
+              className="p-2 hover:bg-white/20 rounded-full transition-colors flex items-center justify-center"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Slider - Simple version without Framer Motion */}
       <div 
         className="container md:px-0 md:max-w-none relative"
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)}
+        onMouseEnter={pause}
+        onMouseLeave={resume}
       >
         <div className="relative">
           {/* Background */}
@@ -151,35 +139,24 @@ export default function PlayersSlider() {
         </div>
       </div>
 
-      {/* Dots Indicators */}
-      <div className="flex items-center justify-center mt-2 md:hidden">
-        {slides.map((_, index) => (
-          <button 
-            key={index} 
-            onClick={() => goToSlide(index)} 
-            className="p-1.5"
-          >
-            <span className={`inline-block w-2.5 h-2.5 bg-white rounded-full transition-opacity ${
-              activeSlide === index ? 'opacity-100' : 'opacity-30'
-            }`} />
-          </button>
-        ))}
-      </div>
+      {/* Mobile Dots Indicators */}
+      <DotsIndicator
+        total={slides.length}
+        current={activeSlide}
+        onSelect={setActiveSlide}
+        className="mt-2 md:hidden"
+        size="md"
+      />
 
       {/* Desktop Dots Indicators */}
-      <div className="hidden md:flex items-center justify-center mt-10">
-        {slides.map((_, index) => (
-          <button 
-            key={index} 
-            onClick={() => goToSlide(index)} 
-            className="p-1.5"
-          >
-            <span className={`inline-block w-3 h-3 bg-white rounded-full transition-opacity ${
-              activeSlide === index ? 'opacity-100' : 'opacity-30'
-            }`} />
-          </button>
-        ))}
-      </div>
+      <DotsIndicator
+        total={slides.length}
+        current={activeSlide}
+        onSelect={setActiveSlide}
+        className="mt-10"
+        size="lg"
+        showOnMobile={false}
+      />
     </section>
   );
 }

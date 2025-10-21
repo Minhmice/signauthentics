@@ -7,6 +7,7 @@ export type Article = {
   category: string;
   excerpt: string;
   body: string;
+  author?: string;
 };
 
 export const articles: Article[] = [

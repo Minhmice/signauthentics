@@ -1,88 +1,134 @@
-import Section from "@/components/ui/Section";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Plus, Edit, Trash, Shield } from "lucide-react";
+"use client";
 
-const mockUsers = [
-  { id: "U001", name: "Nguyễn Văn A", email: "nguyenvana@gmail.com", role: "admin", joined: "2023-01-15", status: "active" },
-  { id: "U002", name: "Trần Thị B", email: "tranthib@gmail.com", role: "user", joined: "2023-02-20", status: "active" },
-  { id: "U003", name: "Lê Văn C", email: "levanc@gmail.com", role: "user", joined: "2023-03-10", status: "active" },
-  { id: "U004", name: "Phạm Thị D", email: "phamthid@gmail.com", role: "moderator", joined: "2023-04-05", status: "active" },
-  { id: "U005", name: "Hoàng Văn E", email: "hoangvane@gmail.com", role: "user", joined: "2023-05-12", status: "inactive" },
-  { id: "U006", name: "Đặng Thị F", email: "dangthif@gmail.com", role: "user", joined: "2023-06-18", status: "active" },
-  { id: "U007", name: "Vũ Văn G", email: "vuvang@gmail.com", role: "moderator", joined: "2023-07-22", status: "active" },
-  { id: "U008", name: "Bùi Thị H", email: "buithih@gmail.com", role: "user", joined: "2023-08-30", status: "active" },
+/**
+ * Users Management Page
+ * Wireframe với role management
+ * Admin: Full control, Others: Hidden
+ */
+
+import { DashboardSectionHeader } from "@/components/dashboard/RoleBadge";
+import { DataTable } from "@/components/dashboard/DataTable";
+import { Button } from "@/components/ui/button";
+import { UserPlus, Edit, Trash, Shield } from "lucide-react";
+import { ColumnDef } from "@tanstack/react-table";
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  role: "admin" | "seller" | "editor" | "customer" | "affiliate";
+  createdAt: string;
+  lastActive: string;
+  status: "active" | "inactive";
+};
+
+const mockUsers: User[] = [
+  { id: "USR-001", name: "Admin User", email: "admin@signauthentics.vn", role: "admin", createdAt: "2023-01-01", lastActive: "2m ago", status: "active" },
+  { id: "USR-002", name: "Seller John", email: "john@seller.com", role: "seller", createdAt: "2023-06-15", lastActive: "1h ago", status: "active" },
+  { id: "USR-003", name: "Editor Jane", email: "jane@editor.com", role: "editor", createdAt: "2023-08-20", lastActive: "3h ago", status: "active" },
+  { id: "USR-004", name: "Customer Minh", email: "minh@customer.com", role: "customer", createdAt: "2024-01-10", lastActive: "1d ago", status: "active" },
+  { id: "USR-005", name: "Affiliate Partner", email: "partner@affiliate.com", role: "affiliate", createdAt: "2023-12-01", lastActive: "2d ago", status: "active" },
+];
+
+const roleColors = {
+  admin: "bg-red-500/10 text-red-500",
+  seller: "bg-blue-500/10 text-blue-500",
+  editor: "bg-purple-500/10 text-purple-500",
+  customer: "bg-green-500/10 text-green-500",
+  affiliate: "bg-orange-500/10 text-orange-500",
+};
+
+const userColumns: ColumnDef<User>[] = [
+  {
+    accessorKey: "name",
+    header: "Name",
+    cell: ({ row }) => (
+      <div>
+        <div className="font-medium text-sm">{row.original.name}</div>
+        <div className="text-xs text-zinc-500">{row.original.email}</div>
+      </div>
+    ),
+  },
+  {
+    accessorKey: "role",
+    header: "Role",
+    cell: ({ row }) => {
+      const role = row.original.role;
+      return (
+        <span className={`px-2 py-1 text-xs rounded-full inline-flex items-center gap-1 ${roleColors[role]}`}>
+          <Shield className="w-3 h-3" />
+          {role.charAt(0).toUpperCase() + role.slice(1)}
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Created",
+    cell: ({ row }) => <span className="text-xs text-zinc-400">{new Date(row.original.createdAt).toLocaleDateString("vi-VN")}</span>,
+  },
+  {
+    accessorKey: "lastActive",
+    header: "Last Active",
+    cell: ({ row }) => <span className="text-xs text-zinc-400">{row.original.lastActive}</span>,
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.original.status;
+      return (
+        <span className={`px-2 py-1 text-xs rounded-full ${status === "active" ? "bg-green-500/10 text-green-500" : "bg-zinc-500/10 text-zinc-400"}`}>
+          {status.charAt(0).toUpperCase() + status.slice(1)}
+        </span>
+      );
+    },
+  },
+  {
+    id: "actions",
+    header: "Actions",
+    cell: () => (
+      <div className="flex items-center gap-1">
+        <button className="p-2 hover:bg-zinc-800 rounded transition-colors" title="Change role">
+          <Edit className="w-4 h-4 text-zinc-400" />
+        </button>
+        <button className="p-2 hover:bg-red-900/50 rounded transition-colors" title="Delete user">
+          <Trash className="w-4 h-4 text-red-500" />
+        </button>
+      </div>
+    ),
+  },
 ];
 
 export default function DashboardUsersPage() {
   return (
-    <div className="space-y-8">
-      <Section title="Quản lý người dùng">
-        <div className="flex justify-between items-center mb-4">
-          <div className="text-sm text-zinc-600">{mockUsers.length} người dùng</div>
-          <Button>
-            <Plus className="w-4 h-4 mr-2" />
-            Thêm người dùng
+    <div className="space-y-6">
+      <DashboardSectionHeader
+        title="Users"
+        description="Quản lý người dùng (Name, Email, Role, Created, Last active)"
+        visibleFor={["admin"]}
+        actions={
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+            <UserPlus className="w-4 h-4 mr-2" />
+            Add User
           </Button>
-        </div>
+        }
+      />
 
-        <Card>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-zinc-200">
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-zinc-700">ID</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-zinc-700">Tên</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-zinc-700">Email</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-zinc-700">Vai trò</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-zinc-700">Ngày tham gia</th>
-                    <th className="text-center py-3 px-4 text-sm font-semibold text-zinc-700">Trạng thái</th>
-                    <th className="text-center py-3 px-4 text-sm font-semibold text-zinc-700">Hành động</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {mockUsers.map((user) => (
-                    <tr key={user.id} className="border-b border-zinc-100 hover:bg-zinc-50 transition-colors">
-                      <td className="py-3 px-4 text-sm font-mono">{user.id}</td>
-                      <td className="py-3 px-4 text-sm font-medium">{user.name}</td>
-                      <td className="py-3 px-4 text-sm text-zinc-600">{user.email}</td>
-                      <td className="py-3 px-4">
-                        <span
-                          className={`chip text-xs ${
-                            user.role === "admin" ? "bg-purple-100 text-purple-700" : user.role === "moderator" ? "bg-blue-100 text-blue-700" : "bg-zinc-100 text-zinc-700"
-                          }`}
-                        >
-                          <Shield className="w-3 h-3 inline mr-1" />
-                          {user.role === "admin" ? "Admin" : user.role === "moderator" ? "Moderator" : "User"}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-sm">{new Date(user.joined).toLocaleDateString("vi-VN")}</td>
-                      <td className="py-3 px-4 text-center">
-                        <span className={`chip text-xs ${user.status === "active" ? "bg-green-100 text-green-700" : "bg-zinc-100 text-zinc-700"}`}>
-                          {user.status === "active" ? "Hoạt động" : "Không hoạt động"}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4">
-                        <div className="flex items-center justify-center gap-2">
-                          <button className="p-2 hover:bg-zinc-100 rounded-lg transition-colors">
-                            <Edit className="w-4 h-4 text-zinc-600" />
-                          </button>
-                          <button className="p-2 hover:bg-red-50 rounded-lg transition-colors">
-                            <Trash className="w-4 h-4 text-red-600" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-      </Section>
+      <DataTable
+        columns={userColumns}
+        data={mockUsers}
+        searchKey="name"
+        searchPlaceholder="Search users..."
+        pageSize={10}
+      />
+
+      {/* Wireframe Note */}
+      <div className="p-4 bg-zinc-900/50 border border-zinc-800 rounded-lg">
+        <p className="text-xs text-zinc-500">
+          <strong className="text-zinc-400">Action:</strong> Change role dropdown - thay đổi quyền truy cập ngay lập tức
+        </p>
+      </div>
     </div>
   );
 }
-
-

@@ -31,7 +31,7 @@ export default function ProductsPage() {
         <div className="flex items-center justify-center mt-8 gap-2">
           <Button variant="outline">Prev</Button>
           {Array.from({ length: 3 }).map((_, i) => (
-            <Button key={i} variant={i === 0 ? "primary" : "outline"} size="sm" className="w-10">{i + 1}</Button>
+            <Button key={i} variant={i === 0 ? "default" : "outline"} size="sm" className="w-10">{i + 1}</Button>
           ))}
           <Button variant="outline">Next</Button>
         </div>

@@ -39,7 +39,7 @@ export default function ArticleDetailPage({ params }: { params: Promise<{ slug: 
           <div className="flex items-center gap-6 text-sm text-zinc-600 pb-6 border-b border-zinc-200 mb-8">
             <div className="flex items-center gap-2">
               <User className="w-4 h-4" />
-              <span>{article.author}</span>
+              <span>{article.author || "SignAuthentics Team"}</span>
             </div>
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4" />
@@ -84,7 +84,7 @@ export default function ArticleDetailPage({ params }: { params: Promise<{ slug: 
             </p>
 
             <blockquote>
-              <p>"Mỗi món đồ lưu niệm không chỉ là một vật phẩm, mà là một phần của lịch sử bóng đá. Đó là lý do tại sao chúng tôi luôn đảm bảo tính xác thực 100%."</p>
+              <p>&ldquo;Mỗi món đồ lưu niệm không chỉ là một vật phẩm, mà là một phần của lịch sử bóng đá. Đó là lý do tại sao chúng tôi luôn đảm bảo tính xác thực 100%.&rdquo;</p>
               <cite>— Đội ngũ SignAuthentics</cite>
             </blockquote>
 

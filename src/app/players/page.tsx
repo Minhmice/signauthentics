@@ -71,7 +71,7 @@ export default function PlayersPage() {
           </div>
         ) : (
           <div className="text-center py-12 text-zinc-500">
-            Không tìm thấy cầu thủ nào phù hợp với "{searchQuery}"
+            Không tìm thấy cầu thủ nào phù hợp với &ldquo;{searchQuery}&rdquo;
           </div>
         )}
       </Section>

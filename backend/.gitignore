@@ -1,0 +1,33 @@
+# Backend Infrastructure - Git Ignore
+# Never commit secrets!
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env.*.local
+
+# Cloudflare Tunnel credentials
+cloudflared/credentials.json
+cloudflared/*.json
+
+# Backups
+backups/
+*.sql
+*.sql.gz
+*.dump
+
+# Logs
+*.log
+logs/
+
+# Docker volumes (handled by Docker)
+postgres_data/
+minio_data/
+meilisearch_data/
+
+# Temporary files
+*.tmp
+*.bak
+.DS_Store
+

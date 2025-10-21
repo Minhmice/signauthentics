@@ -1,112 +1,255 @@
-import Section from "@/components/ui/Section";
+"use client";
+
+/**
+ * Dashboard Overview Page
+ * Enhanced UI với charts và analytics
+ * Admin: Full KPIs, Seller: Own-only, Others: Limited
+ */
+
+import { DashboardSectionHeader } from "@/components/dashboard/RoleBadge";
+import { KPICard, KPIGrid } from "@/components/dashboard/KPICard";
 import { Card, CardContent } from "@/components/ui/card";
-import { TrendingUp, TrendingDown, Package, Users, DollarSign, ShoppingCart } from "lucide-react";
+import { DataTable } from "@/components/dashboard/DataTable";
+import { ChartPlaceholder, Sparkline } from "@/components/dashboard/ChartPlaceholder";
+import { DollarSign, ShoppingCart, Gavel, TrendingUp, Clock, Users, Package, Target } from "lucide-react";
 import { formatPrice } from "@/lib/ui/price";
+import { ColumnDef } from "@tanstack/react-table";
 
-const kpis = [
-  { label: "Doanh thu", value: "245,000,000", change: "+12.5%", trend: "up", icon: DollarSign, color: "text-green-500" },
-  { label: "Đơn hàng", value: "856", change: "+8.2%", trend: "up", icon: ShoppingCart, color: "text-blue-500" },
-  { label: "Sản phẩm", value: "1,234", change: "-3.1%", trend: "down", icon: Package, color: "text-orange-500" },
-  { label: "Người dùng", value: "12,345", change: "+18.7%", trend: "up", icon: Users, color: "text-purple-500" },
+// Mock data cho Live Auctions
+type LiveAuction = {
+  id: string;
+  product: string;
+  highestBid: number;
+  bidders: number;
+  endsIn: string;
+};
+
+const liveAuctions: LiveAuction[] = [
+  { id: "AUC-001", product: "Signed Jersey Quang Hải #19", highestBid: 8500000, bidders: 12, endsIn: "2h 30m" },
+  { id: "AUC-002", product: "Signed Ball Vietnam U22", highestBid: 4200000, bidders: 8, endsIn: "5h 15m" },
+  { id: "AUC-003", product: "Signed Boots Công Phượng", highestBid: 6700000, bidders: 15, endsIn: "1h 45m" },
 ];
 
-const recentOrders = [
-  { id: "ORD-001", customer: "Nguyễn Văn A", product: "Áo Đấu Vietnam #10", amount: 2500000, status: "completed" },
-  { id: "ORD-002", customer: "Trần Thị B", product: "Bóng Có Chữ Ký", amount: 5000000, status: "pending" },
-  { id: "ORD-003", customer: "Lê Văn C", product: "Poster Đội Tuyển", amount: 1200000, status: "completed" },
-  { id: "ORD-004", customer: "Phạm Thị D", product: "Giày Signed", amount: 8500000, status: "processing" },
-  { id: "ORD-005", customer: "Hoàng Văn E", product: "Găng Tay Thủ Môn", amount: 3200000, status: "completed" },
+// Mock data cho Latest Orders
+type LatestOrder = {
+  orderId: string;
+  buyer: string;
+  total: number;
+  payment: string;
+  fulfillment: string;
+  updated: string;
+};
+
+const latestOrders: LatestOrder[] = [
+  { orderId: "ORD-1234", buyer: "Nguyễn Văn A", total: 2500000, payment: "Paid", fulfillment: "Shipped", updated: "2m ago" },
+  { orderId: "ORD-1235", buyer: "Trần Thị B", total: 5000000, payment: "Pending", fulfillment: "Processing", updated: "5m ago" },
+  { orderId: "ORD-1236", buyer: "Lê Văn C", total: 1200000, payment: "Paid", fulfillment: "Delivered", updated: "10m ago" },
+  { orderId: "ORD-1237", buyer: "Phạm Thị D", total: 8500000, payment: "Paid", fulfillment: "Shipped", updated: "15m ago" },
 ];
 
-export default function DashboardHomePage() {
+const auctionColumns: ColumnDef<LiveAuction>[] = [
+  { accessorKey: "product", header: "Product" },
+  {
+    accessorKey: "highestBid",
+    header: "Highest Bid",
+    cell: ({ row }) => formatPrice(row.original.highestBid, "VND"),
+  },
+  { accessorKey: "bidders", header: "Bidders" },
+  {
+    accessorKey: "endsIn",
+    header: "Ends In",
+    cell: ({ row }) => (
+      <span className="flex items-center gap-1 text-orange-500">
+        <Clock className="w-3.5 h-3.5" />
+        {row.original.endsIn}
+      </span>
+    ),
+  },
+];
+
+const orderColumns: ColumnDef<LatestOrder>[] = [
+  { accessorKey: "orderId", header: "Order ID" },
+  { accessorKey: "buyer", header: "Buyer" },
+  {
+    accessorKey: "total",
+    header: "Total",
+    cell: ({ row }) => formatPrice(row.original.total, "VND"),
+  },
+  {
+    accessorKey: "payment",
+    header: "Payment",
+    cell: ({ row }) => (
+      <span
+        className={`px-2 py-1 text-xs rounded-full ${
+          row.original.payment === "Paid" ? "bg-green-500/10 text-green-500" : "bg-orange-500/10 text-orange-500"
+        }`}
+      >
+        {row.original.payment}
+      </span>
+    ),
+  },
+  {
+    accessorKey: "fulfillment",
+    header: "Fulfillment",
+    cell: ({ row }) => {
+      const status = row.original.fulfillment;
+      const colorMap: Record<string, string> = {
+        Delivered: "bg-green-500/10 text-green-500",
+        Shipped: "bg-blue-500/10 text-blue-500",
+        Processing: "bg-orange-500/10 text-orange-500",
+      };
+      return <span className={`px-2 py-1 text-xs rounded-full ${colorMap[status] || "bg-zinc-500/10 text-zinc-500"}`}>{status}</span>;
+    },
+  },
+  { accessorKey: "updated", header: "Updated" },
+];
+
+export default function DashboardOverviewPage() {
   return (
     <div className="space-y-8">
-      {/* KPIs */}
-      <Section title="Tổng quan">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {kpis.map((kpi) => {
-            const Icon = kpi.icon;
-            return (
-              <Card key={kpi.label}>
-                <CardContent>
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="text-sm text-zinc-500 mb-1">{kpi.label}</div>
-                      <div className="text-2xl font-bold">{kpi.value}</div>
-                      <div className="flex items-center gap-1 mt-2">
-                        {kpi.trend === "up" ? <TrendingUp className="w-4 h-4 text-green-500" /> : <TrendingDown className="w-4 h-4 text-red-500" />}
-                        <span className={`text-sm font-medium ${kpi.trend === "up" ? "text-green-500" : "text-red-500"}`}>{kpi.change}</span>
-                      </div>
-                    </div>
-                    <div className={`p-3 rounded-xl bg-zinc-100 ${kpi.color}`}>
-                      <Icon className="w-6 h-6" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      </Section>
+      {/* Page Header với Role Visibility */}
+      <DashboardSectionHeader
+        title="Overview"
+        description="Dashboard tổng quan - triển khai trên admin.signauthentics.vn"
+        visibleFor={["admin", "seller", "affiliate"]}
+        readOnlyFor={["customer"]}
+      />
 
-      {/* Chart Placeholder */}
-      <Section title="Biểu đồ doanh thu">
-        <Card>
-          <CardContent>
-            <div className="h-64 flex items-center justify-center border-2 border-dashed border-zinc-200 rounded-xl">
-              <div className="text-center text-zinc-400">
-                <TrendingUp className="w-12 h-12 mx-auto mb-2" />
-                <div className="text-sm">Biểu đồ doanh thu theo tháng</div>
-                <div className="text-xs">(Chart placeholder)</div>
+      {/* KPI Metrics */}
+      <div>
+        <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wide mb-4">Key Metrics (7 Days)</h2>
+        <KPIGrid columns={4}>
+          <KPICard 
+            label="Revenue Today / 7D" 
+            value="₫245M" 
+            change="+12.5%" 
+            trend="up" 
+            icon={DollarSign} 
+            iconColor="text-green-500"
+            description="vs last week"
+          />
+          <KPICard 
+            label="Orders New" 
+            value="856" 
+            change="+8.2%" 
+            trend="up" 
+            icon={ShoppingCart} 
+            iconColor="text-blue-500"
+            description="total this week"
+          />
+          <KPICard 
+            label="Auctions Live" 
+            value="12" 
+            change="-2" 
+            trend="down" 
+            icon={Gavel} 
+            iconColor="text-purple-500"
+            description="active now"
+          />
+          <KPICard 
+            label="Outbid Events 24h" 
+            value="45" 
+            change="+15" 
+            trend="up" 
+            icon={TrendingUp} 
+            iconColor="text-orange-500"
+            description="last 24 hours"
+          />
+        </KPIGrid>
+      </div>
+
+      {/* Additional Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="bg-zinc-900 border-zinc-800">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <p className="text-xs text-zinc-500 mb-1">Total Products</p>
+                <p className="text-2xl font-bold text-white">1,234</p>
+              </div>
+              <div className="p-3 bg-blue-500/10 rounded-lg">
+                <Package className="w-5 h-5 text-blue-500" />
               </div>
             </div>
+            <Sparkline data={[30, 40, 35, 50, 49, 60, 70, 91, 85, 95, 88, 100]} color="rgb(59 130 246)" />
           </CardContent>
         </Card>
-      </Section>
+        
+        <Card className="bg-zinc-900 border-zinc-800">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <p className="text-xs text-zinc-500 mb-1">Active Users</p>
+                <p className="text-2xl font-bold text-white">12,345</p>
+              </div>
+              <div className="p-3 bg-green-500/10 rounded-lg">
+                <Users className="w-5 h-5 text-green-500" />
+              </div>
+            </div>
+            <Sparkline data={[45, 52, 48, 65, 72, 68, 85, 90, 78, 95, 88, 100]} color="rgb(34 197 94)" />
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-zinc-900 border-zinc-800">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <p className="text-xs text-zinc-500 mb-1">Conversion Rate</p>
+                <p className="text-2xl font-bold text-white">3.7%</p>
+              </div>
+              <div className="p-3 bg-purple-500/10 rounded-lg">
+                <Target className="w-5 h-5 text-purple-500" />
+              </div>
+            </div>
+            <Sparkline data={[2.8, 3.1, 2.9, 3.3, 3.5, 3.2, 3.8, 3.6, 3.9, 3.7, 3.8, 3.7]} color="rgb(168 85 247)" />
+          </CardContent>
+        </Card>
+      </div>
 
-      {/* Recent Orders */}
-      <Section title="Đơn hàng gần đây">
-        <Card>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-zinc-200">
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-zinc-700">Mã đơn</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-zinc-700">Khách hàng</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-zinc-700">Sản phẩm</th>
-                    <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-700">Số tiền</th>
-                    <th className="text-center py-3 px-4 text-sm font-semibold text-zinc-700">Trạng thái</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {recentOrders.map((order) => (
-                    <tr key={order.id} className="border-b border-zinc-100 hover:bg-zinc-50 transition-colors">
-                      <td className="py-3 px-4 text-sm font-mono">{order.id}</td>
-                      <td className="py-3 px-4 text-sm">{order.customer}</td>
-                      <td className="py-3 px-4 text-sm">{order.product}</td>
-                      <td className="py-3 px-4 text-sm text-right font-semibold">{formatPrice(order.amount, "VND")}</td>
-                      <td className="py-3 px-4 text-center">
-                        <span
-                          className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
-                            order.status === "completed"
-                              ? "bg-green-100 text-green-700"
-                              : order.status === "processing"
-                                ? "bg-blue-100 text-blue-700"
-                                : "bg-orange-100 text-orange-700"
-                          }`}
-                        >
-                          {order.status === "completed" ? "Hoàn thành" : order.status === "processing" ? "Đang xử lý" : "Chờ xử lý"}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+      {/* Revenue Chart */}
+      <div>
+        <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wide mb-4">Revenue Trend (30 Days)</h2>
+        <ChartPlaceholder 
+          title="Total Revenue"
+          description="Daily revenue over the last 30 days"
+          height={320}
+        />
+      </div>
+
+      {/* Live Auctions Table */}
+      <div>
+        <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wide mb-4">
+          Live Auctions
+          <span className="ml-2 text-xs text-zinc-600">
+            (Features: sorting, column visibility, pin left/right, column resize, pagination)
+          </span>
+        </h2>
+        <DataTable columns={auctionColumns} data={liveAuctions} searchKey="product" showPagination={false} />
+      </div>
+
+      {/* Latest Orders Table */}
+      <div>
+        <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wide mb-4">Latest Orders</h2>
+        <DataTable columns={orderColumns} data={latestOrders} searchKey="buyer" showPagination={false} />
+      </div>
+
+      {/* Top Players Spotlight */}
+      <div>
+        <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wide mb-4">Top Players by Revenue</h2>
+        <Card className="bg-zinc-900 border-zinc-800">
+          <CardContent className="p-6">
+            <div className="grid grid-cols-3 gap-4">
+              {["Quang Hải", "Công Phượng", "Văn Hậu"].map((player, i) => (
+                <div key={player} className="text-center p-4 bg-zinc-800/50 rounded-lg">
+                  <div className="text-2xl font-bold text-white mb-1">#{i + 1}</div>
+                  <div className="text-sm text-zinc-400">{player}</div>
+                  <div className="text-xs text-green-500 mt-2">₫{(120 - i * 20)}M</div>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
-      </Section>
+      </div>
     </div>
   );
 }
