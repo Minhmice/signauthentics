@@ -5,7 +5,14 @@ import { Button } from "@/components/ui/button";
 export default function HeroMasthead() {
   return (
     <section className="relative h-[72vh] min-h-[480px] w-full overflow-hidden rounded-2xl">
-      <Image src="/PlayerImages/QuangHai.jpeg" alt="Hero" fill priority sizes="100vw" className="object-cover" />
+      <Image 
+        src="/PlayerImages/QuangHai.jpeg" 
+        alt="Hero" 
+        fill 
+        priority 
+        sizes="100vw" 
+        className="object-cover"
+      />
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
       <div className="absolute inset-0 flex items-end">
         <div className="max-w-screen-2xl mx-auto w-full px-4 md:px-6 pb-10">

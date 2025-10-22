@@ -1,5 +1,6 @@
 ---
-alwaysApply: true
+globs: *tsx
+alwaysApply: false
 ---
 # Rule: shadcn guard
 # Type: Contextual
@@ -19,7 +20,12 @@ Applies to any work related to components under `@/components/ui/**` (or the equ
   - `components/ui/**`
   - `src/components/ui/**`
   - `lib/shadcn/**`
-- If a user requests to “modify” a shadcn/ui component, you MUST:
+- **File size limit**: Each `.tsx` file MUST be under **200 lines**:
+  - Break down large components into smaller, reusable pieces
+  - Extract common logic into custom hooks (`hooks/**`)
+  - Extract repeated UI patterns into shared components (`components/shared/**`)
+  - Create composition-based architecture for better maintainability and debugging
+- If a user requests to "modify" a shadcn/ui component, you MUST:
   1) Create a **wrapper** under:
      - `components/app/**`, `components/shared/**`, or `features/**/components/**`
   2) Import the base component from `@/components/ui/...`

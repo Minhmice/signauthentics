@@ -1,245 +1,148 @@
-# ============================================
-# SIGNAUTHENTICS - PRODUCTION DOCKER COMPOSE
-# ============================================
-# Ref: https://docs.docker.com/compose/compose-file/
-# Ref: https://docs.docker.com/compose/
-
-version: '3.9'
-
-# ============================================
-# NETWORKS
-# ============================================
-networks:
-  signauthentics:
-    driver: bridge
-
-# ============================================
-# VOLUMES
-# ============================================
-volumes:
-  postgres_data:
-    driver: local
-  minio_data:
-    driver: local
-  meilisearch_data:
-    driver: local
-
-# ============================================
-# SERVICES
-# ============================================
 services:
-  # ==========================================
-  # POSTGRESQL 16 - Primary Database
-  # ==========================================
-  # Ref: https://www.postgresql.org/docs/current/
-  # Ref: https://hub.docker.com/_/postgres
+  # PostgreSQL Database
   db:
     image: postgres:16-alpine
+    platform: linux/arm64
     container_name: signauthentics-db
     restart: unless-stopped
-    networks:
-      - signauthentics
     environment:
+      POSTGRES_DB: ${POSTGRES_DB:-football}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB:-signauthentics}
-      PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      # Init script for extensions
       - ./ops/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh:ro
-    ports:
-      - "5432:5432"
     healthcheck:
-      # Ref: https://www.postgresql.org/docs/current/app-pg-isready.html
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-signauthentics}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-football}"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 10s
-    command:
-      - "postgres"
-      - "-c"
-      - "shared_buffers=256MB"
-      - "-c"
-      - "max_connections=200"
-
-  # ==========================================
-  # MINIO - S3-Compatible Object Storage
-  # ==========================================
-  # Ref: https://min.io/docs/minio/linux/index.html
-  # SECURITY: NOT exposed publicly, only via imgproxy
-  minio:
-    image: minio/minio:latest
-    container_name: signauthentics-minio
-    restart: unless-stopped
     networks:
       - signauthentics
+
+  # MinIO S3 Storage
+  minio:
+    image: minio/minio:latest
+    platform: linux/arm64
+    container_name: signauthentics-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minhmice}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-      MINIO_BROWSER: "on"
     volumes:
       - minio_data:/data
-    ports:
-      # API port (internal only - do NOT expose to internet)
-      - "9000:9000"
-      # Console port (for admin - restrict access)
-      - "9001:9001"
-    command: server /data --console-address ":9001"
     healthcheck:
-      # Ref: https://min.io/docs/minio/linux/operations/monitoring/healthcheck-probe.html
-      test: ["CMD", "mc", "ready", "local"]
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/ready"]
       interval: 30s
       timeout: 20s
       retries: 3
-      start_period: 30s
-
-  # ==========================================
-  # IMGPROXY - Image Optimization & Resizing
-  # ==========================================
-  # Ref: https://docs.imgproxy.net/
-  # Ref: https://docs.imgproxy.net/configuration
-  imgproxy:
-    image: darthsim/imgproxy:latest
-    container_name: signauthentics-imgproxy
-    restart: unless-stopped
     networks:
       - signauthentics
+
+  # imgproxy for image processing
+  imgproxy:
+    image: darthsim/imgproxy:latest
+    platform: linux/arm64
+    container_name: signauthentics-imgproxy
+    restart: unless-stopped
     environment:
-      # Security - URL Signing (REQUIRED for production)
-      # Ref: https://docs.imgproxy.net/usage/signing_url
+      IMGPROXY_BIND: ":8080"
+      IMGPROXY_LOCAL_FILESYSTEM_ROOT: /tmp
+      IMGPROXY_USE_ETAG: "true"
+      IMGPROXY_AUTO_WEBP: "true"
+      IMGPROXY_ENABLE_CLIENT_HINTS: "true"
+      IMGPROXY_QUALITY: 80
+      IMGPROXY_FORMAT: "webp"
+      IMGPROXY_S3_ENDPOINT: "http://minio:9000"
+      IMGPROXY_S3_REGION: "us-east-1"
+      IMGPROXY_S3_ACCESS_KEY: ${MINIO_ROOT_USER:-minhmice}
+      IMGPROXY_S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
+      IMGPROXY_S3_BUCKET: ${S3_BUCKET:-media}
       IMGPROXY_KEY: ${IMGPROXY_KEY}
       IMGPROXY_SALT: ${IMGPROXY_SALT}
-      IMGPROXY_SIGNATURE_SIZE: ${IMGPROXY_SIGNATURE_SIZE:-32}
-      
-      # S3 Source Configuration
-      # Ref: https://docs.imgproxy.net/configuration/options#source-url
-      IMGPROXY_USE_S3: "true"
-      IMGPROXY_S3_ENDPOINT: ${MINIO_INTERNAL_ENDPOINT}
-      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER}
-      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD}
-      IMGPROXY_S3_REGION: ${MINIO_REGION:-us-east-1}
-      
-      # Performance
-      IMGPROXY_MAX_SRC_RESOLUTION: 50
-      IMGPROXY_MAX_SRC_FILE_SIZE: 52428800  # 50MB
-      IMGPROXY_WORKERS: 4
-      
-      # CORS
-      IMGPROXY_ALLOW_ORIGIN: ${IMGPROXY_ALLOW_ORIGIN:-*}
-      
-      # Format & Quality
-      IMGPROXY_JPEG_PROGRESSIVE: "true"
-      IMGPROXY_PNG_INTERLACED: "true"
-      IMGPROXY_ENABLE_WEBP_DETECTION: "true"
-      IMGPROXY_ENFORCE_WEBP: "true"
-    ports:
-      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     depends_on:
       minio:
         condition: service_healthy
-    healthcheck:
-      # Ref: https://docs.imgproxy.net/healthcheck
-      test: ["CMD", "imgproxy", "health"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
-
-  # ==========================================
-  # VALKEY/REDIS - Cache & Job Queue
-  # ==========================================
-  # Using Valkey (Redis fork) for ARM64 compatibility
-  cache:
-    image: valkey/valkey:latest
-    container_name: signauthentics-cache
-    restart: unless-stopped
     networks:
       - signauthentics
-    ports:
-      - "6379:6379"
+
+  # Redis Cache
+  cache:
+    image: valkey/valkey:7-alpine
+    platform: linux/arm64
+    container_name: signauthentics-cache
+    restart: unless-stopped
+    command: valkey-server /etc/valkey/valkey.conf
     volumes:
-      - ./ops/redis.conf:/usr/local/etc/redis/redis.conf:ro
-    command: valkey-server /usr/local/etc/redis/redis.conf
+      - ./ops/redis.conf:/etc/valkey/valkey.conf:ro
+      - redis_data:/data
     healthcheck:
       test: ["CMD", "valkey-cli", "ping"]
       interval: 10s
-      timeout: 5s
+      timeout: 3s
       retries: 5
-
-  # ==========================================
-  # MEILISEARCH - Full-Text Search
-  # ==========================================
-  # Ref: https://www.meilisearch.com/docs
-  # Ref: https://www.meilisearch.com/docs/reference/api/health
-  meilisearch:
-    image: getmeili/meilisearch:latest
-    container_name: signauthentics-search
-    restart: unless-stopped
     networks:
       - signauthentics
+
+  # Meilisearch
+  meilisearch:
+    image: getmeili/meilisearch:v1.3
+    platform: linux/arm64
+    container_name: signauthentics-meilisearch
+    restart: unless-stopped
     environment:
+      MEILI_ENV: production
       MEILI_MASTER_KEY: ${MEILI_MASTER_KEY}
-      MEILI_ENV: ${MEILI_ENV:-production}
-      MEILI_HTTP_ADDR: 0.0.0.0:7700
     volumes:
       - meilisearch_data:/meili_data
-    ports:
-      - "7700:7700"
     healthcheck:
-      # Ref: https://www.meilisearch.com/docs/reference/api/health
       test: ["CMD", "curl", "-f", "http://localhost:7700/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-
-  # ==========================================
-  # NEXT.JS WEB APPLICATION
-  # ==========================================
-  # Built via GitHub Actions or locally
-  # Runs in standalone mode for optimal performance
-  web:
-    image: ${GHCR_IMAGE:-ghcr.io/minhmice/signauthentics}:${IMAGE_TAG:-latest}
-    container_name: signauthentics-web
-    restart: unless-stopped
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       - signauthentics
+
+  # Next.js Web Application
+  web:
+    image: ghcr.io/minhmice/signauthentics:latest
+    platform: linux/arm64
+    container_name: signauthentics-web
+    restart: unless-stopped
     environment:
-      # Node
       NODE_ENV: production
       PORT: 3000
-      
-      # Database
-      DATABASE_URL: ${DATABASE_URL}
-      
-      # MinIO/S3
-      MINIO_ENDPOINT: ${MINIO_INTERNAL_ENDPOINT}
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-      MINIO_BUCKET: ${MINIO_BUCKET}
-      
-      # imgproxy
-      INTERNAL_IMGPROXY_URL: ${INTERNAL_IMGPROXY_URL}
-      NEXT_PUBLIC_IMGPROXY_URL: ${NEXT_PUBLIC_IMGPROXY_URL}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-football}
+      REDIS_URL: redis://cache:6379
+      MEILISEARCH_URL: http://meilisearch:7700
+      MEILISEARCH_KEY: ${MEILI_MASTER_KEY}
+      S3_ENDPOINT: http://minio:9000
+      S3_ACCESS_KEY: ${MINIO_ROOT_USER:-minhmice}
+      S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
+      S3_BUCKET: ${S3_BUCKET:-media}
+      S3_REGION: us-east-1
+      IMGPROXY_URL: http://imgproxy:8080
       IMGPROXY_KEY: ${IMGPROXY_KEY}
       IMGPROXY_SALT: ${IMGPROXY_SALT}
-      
-      # Redis
-      REDIS_URL: ${REDIS_URL}
-      
-      # Meilisearch
-      MEILI_HOST: ${MEILI_HOST}
-      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY}
-      
-      # Public URLs
-      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
-    ports:
-      - "3000:3000"
+      NEXT_PUBLIC_IMGPROXY_BASE: https://img.minhmice.com
+      NEXT_PUBLIC_S3_BUCKET: ${S3_BUCKET:-media}
+      NEXTAUTH_URL: https://app.minhmice.com
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     depends_on:
       db:
+        condition: service_healthy
+      minio:
         condition: service_healthy
       cache:
         condition: service_healthy
@@ -247,33 +150,35 @@ services:
         condition: service_healthy
       imgproxy:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/api/healthz"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-
-  # ==========================================
-  # CLOUDFLARE TUNNEL - Ingress
-  # ==========================================
-  # Ref: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    container_name: signauthentics-tunnel
-    restart: unless-stopped
     networks:
       - signauthentics
+
+  # Cloudflare Tunnel
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    platform: linux/arm64
+    container_name: signauthentics-tunnel
+    restart: unless-stopped
     command: tunnel --config /etc/cloudflared/config.yml run
     volumes:
       - ./cloudflared/config.yml:/etc/cloudflared/config.yml:ro
       - ./cloudflared/credentials.json:/etc/cloudflared/credentials.json:ro
     depends_on:
-      - web
-      - imgproxy
-    healthcheck:
-      test: ["CMD", "cloudflared", "version"]
-      interval: 60s
-      timeout: 10s
-      retries: 3
+      web:
+        condition: service_healthy
+    networks:
+      - signauthentics
 
+volumes:
+  postgres_data:
+    driver: local
+  minio_data:
+    driver: local
+  redis_data:
+    driver: local
+  meilisearch_data:
+    driver: local
+
+networks:
+  signauthentics:
+    driver: bridge

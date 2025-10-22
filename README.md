@@ -156,23 +156,19 @@ signauthentics/
 - Thông tin giá VND/EUR
 - Add to cart functionality
 
-### 4. **Trang Câu Lạc Bộ** (`/clubs`)
-- Danh sách các CLB
-- Chi tiết CLB với danh sách cầu thủ
-
-### 5. **Trang Bộ Sưu Tập** (`/collections`)
+### 4. **Trang Bộ Sưu Tập** (`/collections`)
 - Hiển thị các collections
 - Chi tiết collection
 
-### 6. **Trang Đấu Giá** (`/auctions`)
+### 5. **Trang Đấu Giá** (`/auctions`)
 - Danh sách đấu giá
 - Chi tiết phiên đấu giá
 
-### 7. **Trang Tin Tức** (`/news`)
+### 6. **Trang Tin Tức** (`/news`)
 - Blog/tin tức bóng đá
 - Chi tiết bài viết
 
-### 8. **Dashboard Admin** (`/dashboard`)
+### 7. **Dashboard Admin** (`/dashboard`)
 - **Tổng quan**: KPIs (doanh thu, đơn hàng, sản phẩm, users)
 - **Quản lý sản phẩm**: CRUD products
 - **Quản lý đơn hàng**: Order tracking

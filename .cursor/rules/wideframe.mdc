@@ -1,0 +1,66 @@
+[ruleset: signauthentics-dashboard-wireframe]
+
+1. Theme
+- Phải là dark modern minimal; tránh dùng đen tuyệt đối cho nền; tạo 3 cấp surface: background, surface, raised.
+- Elevation thể hiện bằng tăng sáng bề mặt, không dùng shadow dày.
+- Văn bản và icon phải đạt contrast cao trên nền tối.
+
+2. Layout
+- Desktop-first, content max width 1280–1440px; lưới 12 cột; khoảng trắng rộng.
+- Header có: logo, VN/EN toggle, VND/EUR display (readonly), search, notifications, avatar.
+- Sidebar trái cố định với mục: Overview, Products, Orders, Auctions, Vouchers, Users, Affiliates, Content, Reports, Settings.
+- Mọi màn đều dùng card modular có tiêu đề, mô tả ngắn, action rõ.
+
+3. Role Visibility
+- Annotate trên từng card/table: Admin (all), Seller (own data), Editor (content-only), Customer (my orders/vouchers/notifications), Affiliate (my refs/clicks/sales).
+- Tất cả các bảng và trang chi tiết phải ghi chú phạm vi dữ liệu theo role để map RLS.
+
+4. Overview Page
+- 4 KPI card trên cùng bên trái: Revenue Today/7d, New Orders, Live Auctions, Outbid (24h).
+- Biểu đồ revenue 7d/30d (line/area).
+- Bảng “Live Auctions”: Product, Highest Bid, Bidders, Ends in, Action.
+- Danh sách 10 orders gần nhất; panel thông báo mở từ icon chuông.
+
+5. Table Behaviors (áp dụng cho mọi list)
+- Bắt buộc có: sorting, column filtering, global search, column visibility toggle, column pinning, column resize, pagination, row selection, virtualization (ghi chú ngay trong wireframe).
+- Ô filter nằm trong header hoặc panel filter bên phải; phải có clear/reset.
+
+6. Products
+- List: các cột bắt buộc: SKU, Title, Player, Category, Price VND, Rarity, Stock, Status, Updated.
+- Detail (tabs): Basics, Media, Pricing & Stock, Relations, SEO.
+
+7. Orders
+- List: filter Payment/Fulfillment/Provider/Date; cột: Order ID, Buyer, Items, Total VND, Payment, Fulfillment, Created.
+- Detail: timeline trạng thái, địa chỉ, payment info, shipping provider + tracking link, staff notes.
+
+8. Auctions
+- List: Product, Start, End, Starting Price, Min increment, Status, Highest bid, Bidders.
+- Detail: trạng thái Scheduled/Live/Ended, countdown, feed bid realtime, form bid, Close session, bid history.
+
+9. Vouchers
+- List: Code, Type, Scope, Start/End, Usage total, Usage/user, Status.
+- Detail: định nghĩa rule và điều kiện.
+
+10. Users
+- List: Name, Email, Role, Created, Last active; action change role; quick profile.
+
+11. Affiliates
+- Overview: Total Clicks, Conversions, Sales, Payout pending.
+- Ref Links: danh sách link.
+- Logs: bảng Clicks và Orders quy đổi.
+
+12. Content
+- Blog list, editor cơ bản, tags, featured toggle.
+
+13. Reports
+- Tabs: Revenue, Top categories, Top players, Auction performance.
+- Ưu tiên chart bar/line/scatter; tránh chart khó đọc.
+
+14. Settings
+- Payments on/off, Shipping providers, FX snapshot display, Locale, Domain, Security.
+
+15. Notation
+- Ghi chú contrast & elevation tại style guide frame.
+- Ghi rõ “role visibility” và “table features” ngay trên từng frame.
+
+[end ruleset]

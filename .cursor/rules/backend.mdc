@@ -1,0 +1,119 @@
+[RULE — NONINTERACTIVE SSH AUDIT FOR RASPBERRY PI 5 (NO UPLOADED SCRIPTS)]
+
+ROLE
+You are a Backend/DevOps agent running inside Cursor. Without asking questions, you must:
+1) Open an SSH session to the target host provided by the user (user@host[:port]).
+2) Run a fixed set of read-only probe commands remotely (inline), never writing files.
+3) Collect outputs, escape them safely, and return ONE well-formed JSON object as the first block of your reply.
+4) After the JSON block, print a short human summary with readiness flags (OK/FAIL).
+
+OUTPUT CONTRACT
+Return exactly:
+- Block 1: RAW JSON (no prose around it). It must begin with “{” and end with “}”.
+- Block 2: Short bullet summary (max ~10 lines) with key OK/FAIL checks.
+
+JSON SCHEMA (top-level keys):
+{
+  "host": { "hostname": str, "model": str, "os": str, "kernel": str, "arch": str, "uptime": str, "time_now": str, "ntp_sync": str },
+  "resources": { "cpu": str, "mem_kb": int, "swap_kb": int, "disk": str },
+  "network": { "ipv4": str, "ipv6": str, "open_tcp": str },
+  "docker": { "version": str, "compose": str, "has_docker": bool, "has_compose": bool, "ps": [object_per_container] },
+  "services": {
+    "cloudflared_systemd": str,
+    "cloudflared_docker": str,
+    "minio_http_9000": str,     // "200" if ready (/minio/health/ready)
+    "imgproxy_http_8080": str,  // "200" if /health
+    "meili_http_7700": str,     // "200" if /health
+    "postgres_ready": str,      // "ok" if pg_isready succeeds
+    "postgres_dbs": str
+  },
+  "files": { "env_candidates": str }
+}
+
+SAFETY & ESCAPING
+- Treat every remote output as untrusted text.
+- Escape JSON using a real JSON serializer on the local side (preferred) OR replace
+  backslash, quotes, and control chars (\n, \r, \t, \b, \f) before embedding.
+- All probes are read-only. Never modify services (no restart/enable/install).
+
+REMOTE COMMANDS (run via `ssh -p <PORT> -o StrictHostKeyChecking=accept-new <TARGET> "<CMD>"`)
+Use `bash -lc '<cmd>'` to get login-like env. Each probe is independent; if it fails, store empty string.
+
+BASIC HOST INFO
+- MODEL:              `tr -d '\0' </proc/device-tree/model || true`
+- OS:                 `source /etc/os-release 2>/dev/null && echo "$PRETTY_NAME"`
+- KERNEL:             `uname -r`
+- ARCH:               `uname -m`
+- HOSTNAME:           `hostname -f 2>/dev/null || hostname`
+- UPTIME:             `uptime -p`
+- TIME NOW:           `date -Is`
+- NTP SYNC:           `timedatectl show -p NTPSynchronized --value 2>/dev/null || echo unknown`
+(These determine base platform readiness.)
+
+CPU/MEM/DISK SNAPSHOT
+- CPU (short lscpu):  `lscpu | sed -n '1,15p'`
+- MEM KB:             `grep MemTotal /proc/meminfo | awk '{print $2}'`
+- SWAP KB:            `grep SwapTotal /proc/meminfo | awk '{print $2}'`
+- DISK table:         `df -h --output=source,fstype,size,used,avail,pcent,target | sed 1d`
+
+NETWORK
+- IPv4:               `hostname -I | awk '{print $1}'`
+- IPv6:               `ip -6 addr show scope global | awk '/inet6/{print $2}' | paste -sd ' ' -`
+- Open TCP (first 120 lines):
+  `ss -ltnp | sed -n '1,120p'`  (Modern replacement for netstat.) :contentReference[oaicite:1]{index=1}
+
+DOCKER & COMPOSE
+- Docker version:     `docker --version`  (presence ⇒ has_docker=true)
+- Compose version:    `docker compose version || docker-compose -v`  (presence ⇒ has_compose=true). :contentReference[oaicite:2]{index=2}
+- Running containers (JSON lines):
+  `docker ps --format '{{json .}}' | paste -sd ',' -` (wrap as array client-side)
+
+SYSTEMD / CLOUDFLARED
+- systemd state:      `systemctl is-active cloudflared 2>/dev/null || echo unknown`
+(“active” means running under systemd.) :contentReference[oaicite:3]{index=3}
+- Docker presence:    `docker ps --format '{{.Names}}' | grep -E '^cloudflared$' || true`
+
+SERVICE HEALTH PROBES (localhost)
+- MinIO readiness:    `curl -fsS -o /dev/null -w "%{http_code}" http://127.0.0.1:9000/minio/health/ready`
+  (Expect “200”.) :contentReference[oaicite:4]{index=4}
+- imgproxy health:    `curl -fsS -o /dev/null -w "%{http_code}" http://127.0.0.1:8080/health`  (Expect “200”.) :contentReference[oaicite:5]{index=5}
+- Meilisearch health: `curl -fsS -o /dev/null -w "%{http_code}" http://127.0.0.1:7700/health`   (Expect “200”.) :contentReference[oaicite:6]{index=6}
+- Postgres ready:     `pg_isready -q && echo ok || echo fail` (connection status utility). :contentReference[oaicite:7]{index=7}
+- DB list (best-effort, local peer auth only):
+  `psql -At -U postgres -c "select datname from pg_database where datistemplate=false;" 2>/dev/null || true`
+
+FILE HINTS
+- Candidate .env files in ~ (maxdepth 3):
+  `find ~ -maxdepth 3 -type f -name '.env' -o -name '.env.production' 2>/dev/null | sed -n '1,50p'`
+
+JSON BUILD (CLIENT-SIDE)
+- For each probe, capture stdout as strings. Use a JSON serializer in your host language (Node/Python/TS) to build the exact schema above.
+- Booleans:
+  has_docker = (docker version stdout non-empty)
+  has_compose = (compose version stdout non-empty)
+- Health fields store raw HTTP code strings (“200”), Postgres “ok”/“fail”.
+- docker.ps must be a JSON array of objects. If you only have a CSV of JSON lines, wrap as `[<line1>,<line2>,...]`. If empty, use `[]`.
+
+READINESS FLAGS (for human summary)
+- OK if: has_docker && has_compose && postgres_ready == "ok"
+- Optional OKs: minio_http_9000=="200", imgproxy_http_8080=="200", meili_http_7700=="200"
+- Cloudflare detected if (cloudflared_systemd=="active" OR cloudflared_docker non-empty).
+
+FAILURE & DEGRADATION
+- If SSH fails: return an error JSON `{ "error": "ssh_failed", "stderr": "..."}`
+- If a probe command is missing, return empty string for that field and continue.
+- Never install packages or mutate services.
+- Never prompt the user; this rule is noninteractive.
+
+EXAMPLE INVOCATION PATTERN (Cursor task logic)
+- Given USER supplies: `target="pi@192.168.1.50"`, `port=22`
+- For each probe, run:
+  `ssh -p 22 -o StrictHostKeyChecking=accept-new "$target" "bash -lc '<probe>'"`
+- Collect all outputs, build the JSON, print it, then print the short summary.
+
+REFERENCES (for your own correctness; do not print unless asked)
+- docker compose CLI & Compose file spec. 
+- systemctl usage & is-active semantics.
+- ss(8) sockets inspection.
+- Postgres pg_isready utility.
+- MinIO /minio/health/ready, imgproxy /health, Meilisearch /health endpoints.
