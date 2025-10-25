@@ -11,7 +11,7 @@ import { AnimatedSection, AnimatedField } from "@/app/dashboard/components/forms
 import { Camera, Image as ImageIcon } from "lucide-react";
 
 interface Step3MediaProps {
-  form: UseFormReturn<Record<string, unknown>>;
+  form: UseFormReturn<any>;
   images: Array<{ id: string; url: string; name: string }>;
   setImages: React.Dispatch<React.SetStateAction<Array<{ id: string; url: string; name: string }>>>;
 }

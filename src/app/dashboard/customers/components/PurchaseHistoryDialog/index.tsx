@@ -15,6 +15,7 @@ import { History, ShoppingCart, Gavel, Package, Calendar, DollarSign } from "luc
 import type { Customer, Order, Auction } from "@/lib/mock/db";
 import { customersAPI } from "@/lib/mock/db";
 import { formatPrice } from "@/lib/ui/price";
+import { ClientDate } from "@/components/shared/ClientDate";
 
 interface PurchaseHistoryDialogProps {
   open: boolean;
@@ -49,13 +50,7 @@ export function PurchaseHistoryDialog({ open, onOpenChange, customer }: Purchase
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('vi-VN', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    return <ClientDate date={dateString} variant="vn" />;
   };
 
   const getStatusColor = (status: string) => {

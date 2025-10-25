@@ -7,7 +7,7 @@
 
 import * as React from "react";
 import Section from "@/components/ui/Section";
-import ProductCard from "@/components/cards/ProductCard";
+import ProductCard from "@/app/(landing)/components/cards/ProductCard";
 import { products } from "@/lib/mock/products";
 import { 
   Search, 

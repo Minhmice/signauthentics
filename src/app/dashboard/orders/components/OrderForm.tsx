@@ -14,6 +14,8 @@ import { Step4PaymentShipping } from "./OrderFormSteps/Step4PaymentShipping";
 import { Step5ReviewSummary } from "./OrderFormSteps/Step5ReviewSummary";
 
 interface OrderFormProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   order?: Order;
   onSuccess?: () => void;
   onCancel?: () => void;
@@ -28,8 +30,7 @@ const steps = [
   { id: "review", title: "Review & Summary", description: "Review and save order", component: Step5ReviewSummary },
 ];
 
-export function OrderForm({ order, onSuccess, onCancel, trigger }: OrderFormProps) {
-  const [open, setOpen] = React.useState(false);
+export function OrderForm({ open, onOpenChange, order, onSuccess, onCancel, trigger }: OrderFormProps) {
   const defaultValues = React.useMemo(() => {
     if (order) {
       return {
@@ -74,7 +75,7 @@ export function OrderForm({ order, onSuccess, onCancel, trigger }: OrderFormProp
       } else {
         await ordersAPI.create(data);
       }
-      setOpen(false);
+      onOpenChange(false);
       onSuccess?.();
     } catch (error) {
       console.error("Error saving order:", error);
@@ -82,7 +83,7 @@ export function OrderForm({ order, onSuccess, onCancel, trigger }: OrderFormProp
   };
 
   const handleOpenChange = (newOpen: boolean) => {
-    setOpen(newOpen);
+    onOpenChange(newOpen);
     if (!newOpen) {
       onCancel?.();
     }
@@ -91,7 +92,7 @@ export function OrderForm({ order, onSuccess, onCancel, trigger }: OrderFormProp
   return (
     <>
       {trigger && (
-        <div onClick={() => setOpen(true)} className="cursor-pointer">
+        <div onClick={() => onOpenChange(true)} className="cursor-pointer">
           {trigger}
         </div>
       )}

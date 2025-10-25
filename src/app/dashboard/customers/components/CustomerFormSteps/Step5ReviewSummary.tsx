@@ -101,7 +101,7 @@ export function Step5ReviewSummary() {
                     <Clock className="h-4 w-4 text-gray-400" />
                     <span>
                       {formData.lastLoginAt ? 
-                        new Date(formData.lastLoginAt).toLocaleDateString() : 
+                        new Date(formData.lastLoginAt).toLocaleDateString('vi-VN') : 
                         "Never logged in"
                       }
                     </span>

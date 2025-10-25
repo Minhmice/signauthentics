@@ -1,6 +1,6 @@
 "use client";
 import Section from "@/components/ui/Section";
-import AuctionCard from "@/components/cards/AuctionCard";
+import AuctionCard from "@/app/(landing)/components/cards/AuctionCard";
 import { auctions } from "@/lib/mock/auctions";
 import { products } from "@/lib/mock/products";
 import { useState } from "react";

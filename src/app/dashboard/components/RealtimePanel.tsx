@@ -22,7 +22,7 @@ const MOCK_EVENTS: NotificationEvent[] = [
     type: "order",
     title: "New Order",
     message: "Order #ORD-1234 from Nguyễn Văn A",
-    timestamp: new Date(Date.now() - 5 * 60 * 1000),
+    timestamp: new Date(2024, 11, 1, 10, 30), // Static time
     read: false,
   },
   {
@@ -30,7 +30,7 @@ const MOCK_EVENTS: NotificationEvent[] = [
     type: "bid",
     title: "New Bid",
     message: "New bid ₫5,000,000 on Signed Jersey #10",
-    timestamp: new Date(Date.now() - 15 * 60 * 1000),
+    timestamp: new Date(2024, 11, 1, 10, 20), // Static time
     read: false,
   },
   {
@@ -38,7 +38,7 @@ const MOCK_EVENTS: NotificationEvent[] = [
     type: "outbid",
     title: "Outbid Alert",
     message: "You've been outbid on Signed Ball",
-    timestamp: new Date(Date.now() - 30 * 60 * 1000),
+    timestamp: new Date(2024, 11, 1, 10, 5), // Static time
     read: true,
   },
   {
@@ -46,7 +46,7 @@ const MOCK_EVENTS: NotificationEvent[] = [
     type: "auction_ended",
     title: "Auction Ended",
     message: "Auction for Poster #5 has ended",
-    timestamp: new Date(Date.now() - 60 * 60 * 1000),
+    timestamp: new Date(2024, 11, 1, 9, 35), // Static time
     read: true,
   },
   {
@@ -54,7 +54,7 @@ const MOCK_EVENTS: NotificationEvent[] = [
     type: "comment",
     title: "New Comment",
     message: "Trần Thị B commented on Product #123",
-    timestamp: new Date(Date.now() - 90 * 60 * 1000),
+    timestamp: new Date(2024, 11, 1, 9, 5), // Static time
     read: true,
   },
 ];

@@ -1,6 +1,6 @@
 import Section from "@/components/ui/Section";
-import ProductGallery from "@/components/product/ProductGallery";
-import ProductCard from "@/components/cards/ProductCard";
+import ProductGallery from "@/app/(landing)/components/product/ProductGallery";
+import ProductCard from "@/app/(landing)/components/cards/ProductCard";
 import { products } from "@/lib/mock/products";
 import { rarityToBadge } from "@/lib/ui/rarity";
 import { formatEUR, formatVND, vndToEur } from "@/lib/ui/price";

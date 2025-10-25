@@ -1,6 +1,6 @@
 "use client";
 
-import PlayerCard from "@/components/cards/PlayerCard";
+import PlayerCard from "@/app/(landing)/components/cards/PlayerCard";
 import { players } from "@/lib/mock/players";
 import { OptimizedCarousel } from "@/components/shared/OptimizedCarousel";
 

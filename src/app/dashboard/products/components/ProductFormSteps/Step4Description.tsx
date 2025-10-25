@@ -19,7 +19,7 @@ import { AnimatedSection, AnimatedField } from "@/app/dashboard/components/forms
 import { FileText, Hash, Link } from "lucide-react";
 
 interface Step4DescriptionProps {
-  form: UseFormReturn<Record<string, unknown>>;
+  form: UseFormReturn<any>;
 }
 
 export function Step4Description({ form }: Step4DescriptionProps) {

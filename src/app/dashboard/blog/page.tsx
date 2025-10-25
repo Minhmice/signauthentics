@@ -32,7 +32,7 @@ import { articlesAPI, type Article } from "@/lib/mock/db";
 export default function BlogPage() {
   const [articles, setArticles] = React.useState<Article[]>([]);
   const [loading, setLoading] = React.useState(true);
-  const [showForm, setShowForm] = React.useState(false);
+  const [isFormOpen, setIsFormOpen] = React.useState(false);
   const [editingArticle, setEditingArticle] = React.useState<Article | undefined>();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -57,12 +57,12 @@ export default function BlogPage() {
 
   const handleCreate = () => {
     setEditingArticle(undefined);
-    setShowForm(true);
+    setIsFormOpen(true);
   };
 
   const handleEdit = (article: Article) => {
     setEditingArticle(article);
-    setShowForm(true);
+    setIsFormOpen(true);
   };
 
   const handleDelete = async (article: Article) => {
@@ -77,7 +77,7 @@ export default function BlogPage() {
   };
 
   const handleFormSuccess = () => {
-    setShowForm(false);
+    setIsFormOpen(false);
     setEditingArticle(undefined);
     loadArticles();
   };
@@ -124,7 +124,7 @@ export default function BlogPage() {
       header: "Published",
       cell: ({ row }) => {
         const date = row.getValue("publishedAt") as Date;
-        return date ? new Date(date).toLocaleDateString() : "Draft";
+        return date ? new Date(date).toLocaleDateString('vi-VN') : "Draft";
       },
     },
     {
@@ -225,13 +225,12 @@ export default function BlogPage() {
         onRowDelete={handleDelete}
       />
 
-      {showForm && (
-        <ArticleForm
-          article={editingArticle}
-          onSuccess={handleFormSuccess}
-          onCancel={() => setShowForm(false)}
-        />
-      )}
+      <ArticleForm
+        open={isFormOpen}
+        onOpenChange={setIsFormOpen}
+        article={editingArticle}
+        onSuccess={handleFormSuccess}
+      />
     </div>
   );
 }

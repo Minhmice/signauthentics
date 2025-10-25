@@ -1,8 +1,8 @@
 "use client";
 import Section from "@/components/ui/Section";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/Tabs";
-import ProductCard from "@/components/cards/ProductCard";
-import ArticleCard from "@/components/cards/ArticleCard";
+import ProductCard from "@/app/(landing)/components/cards/ProductCard";
+import ArticleCard from "@/app/(landing)/components/cards/ArticleCard";
 import { collections } from "@/lib/mock/collections";
 import { products } from "@/lib/mock/products";
 import { articles } from "@/lib/mock/articles";

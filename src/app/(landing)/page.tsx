@@ -1,5 +1,5 @@
 import Section from "@/components/ui/Section";
-import CollectionCard from "@/components/cards/CollectionCard";
+import CollectionCard from "@/app/(landing)/components/cards/CollectionCard";
 import { collections } from "@/lib/mock/collections";
 import HeroMasthead from "./components/home/HeroMasthead";
 import PlayersSlider from "./components/home/PlayersSlider";

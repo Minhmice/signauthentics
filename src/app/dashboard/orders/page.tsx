@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Trash2, Package, Eye, Edit } from "lucide-react";
 import { ordersAPI, type Order } from "@/lib/mock/db";
 import { formatPrice } from "@/lib/ui/price";
+import { ClientDate } from "@/components/shared/ClientDate";
 import { ColumnDef } from "@tanstack/react-table";
 import { toast } from "sonner";
 
@@ -279,7 +280,7 @@ export default function DashboardOrdersPage() {
       header: "Date",
       cell: ({ row }) => (
         <div className="text-sm">
-          {new Date(row.original.createdAt).toLocaleDateString()}
+          <ClientDate date={row.original.createdAt} variant="vn" />
         </div>
       ),
     },
@@ -358,7 +359,15 @@ export default function DashboardOrdersPage() {
       )}
 
       {/* Order Form Dialog */}
-      <OrderForm order={selectedOrder} />
+      <OrderForm 
+        open={isFormOpen}
+        onOpenChange={setIsFormOpen}
+        order={selectedOrder}
+        onSuccess={() => {
+          loadOrders();
+          setIsFormOpen(false);
+        }}
+      />
 
       {/* Delete Confirmation Dialog */}
       <ConfirmDialog

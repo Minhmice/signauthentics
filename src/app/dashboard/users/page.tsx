@@ -251,7 +251,7 @@ export default function DashboardUsersPage() {
       header: "Joined",
       cell: ({ row }) => (
         <div className="text-sm">
-          {new Date(row.original.joinedAt).toLocaleDateString()}
+          {new Date(row.original.joinedAt).toLocaleDateString('vi-VN')}
         </div>
       ),
     },
@@ -261,7 +261,7 @@ export default function DashboardUsersPage() {
       cell: ({ row }) => (
         <div className="text-sm">
           {row.original.lastLoginAt 
-            ? new Date(row.original.lastLoginAt).toLocaleDateString()
+            ? new Date(row.original.lastLoginAt).toLocaleDateString('vi-VN')
             : "Never"
           }
         </div>

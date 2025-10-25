@@ -15,6 +15,8 @@ import { Step4Media } from "./ArticleFormSteps/Step4Media";
 import { Step5ReviewSummary } from "./ArticleFormSteps/Step5ReviewSummary";
 
 interface ArticleFormProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   article?: Article;
   onSuccess?: () => void;
   onCancel?: () => void;
@@ -29,8 +31,7 @@ const steps = [
   { id: "review", title: "Review & Summary", description: "Review and publish", component: Step5ReviewSummary },
 ];
 
-export function ArticleForm({ article, onSuccess, onCancel, trigger }: ArticleFormProps) {
-  const [open, setOpen] = React.useState(false);
+export function ArticleForm({ open, onOpenChange, article, onSuccess, onCancel, trigger }: ArticleFormProps) {
 
   const defaultValues = React.useMemo(() => {
     if (article) {
@@ -88,7 +89,7 @@ export function ArticleForm({ article, onSuccess, onCancel, trigger }: ArticleFo
       } else {
         await articlesAPI.create(submitData);
       }
-      setOpen(false);
+      onOpenChange(false);
       onSuccess?.();
     } catch (error) {
       console.error("Error saving article:", error);
@@ -96,7 +97,7 @@ export function ArticleForm({ article, onSuccess, onCancel, trigger }: ArticleFo
   };
 
   const handleOpenChange = (newOpen: boolean) => {
-    setOpen(newOpen);
+    onOpenChange(newOpen);
     if (!newOpen) {
       onCancel?.();
     }
@@ -105,7 +106,7 @@ export function ArticleForm({ article, onSuccess, onCancel, trigger }: ArticleFo
   return (
     <>
       {trigger && (
-        <div onClick={() => setOpen(true)} className="cursor-pointer">
+        <div onClick={() => onOpenChange(true)} className="cursor-pointer">
           {trigger}
         </div>
       )}

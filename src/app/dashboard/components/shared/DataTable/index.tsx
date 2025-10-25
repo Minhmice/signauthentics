@@ -55,6 +55,7 @@ interface DataTableProps<TData, TValue> {
   onRowEdit?: (row: TData) => void;
   onRowDelete?: (row: TData) => void;
   onRowDuplicate?: (row: TData) => void;
+  onRowSelectionChange?: (selectedRows: TData[]) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -75,6 +76,7 @@ export function DataTable<TData, TValue>({
   onRowEdit,
   onRowDelete,
   onRowDuplicate,
+  onRowSelectionChange,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -155,6 +157,14 @@ export function DataTable<TData, TValue>({
   // Get selected rows data
   const selectedRows = table.getFilteredSelectedRowModel().rows;
   const selectedIds = selectedRows.map(row => getRowId ? getRowId(row.original) : row.id);
+
+  // Notify parent when row selection changes
+  React.useEffect(() => {
+    if (onRowSelectionChange) {
+      const selectedRowsData = selectedRows.map(row => row.original);
+      onRowSelectionChange(selectedRowsData);
+    }
+  }, [selectedRows, onRowSelectionChange]);
 
   const handleClearSelection = () => {
     setRowSelection({});

@@ -16,6 +16,7 @@ import { DateRange } from "react-day-picker";
 import { ExportButton } from '@/app/dashboard/components/shared/ExportButton';
 import { Download, TrendingUp, BarChart3, DollarSign, ShoppingCart, Users, Eye, Calendar } from "lucide-react";
 import { formatPrice } from "@/lib/ui/price";
+import { formatDateRange } from "@/lib/utils/date";
 import { ColumnDef } from "@tanstack/react-table";
 import { toast } from "sonner";
 
@@ -152,8 +153,8 @@ const auctionColumns: ColumnDef<AuctionReport>[] = [
 
 export default function DashboardReportsPage() {
   const [dateRange, setDateRange] = React.useState<DateRange>({
-    from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
-    to: new Date(),
+    from: new Date(2024, 11, 1), // Static date to avoid hydration issues
+    to: new Date(2024, 11, 31),
   });
   const [selectedReport, setSelectedReport] = React.useState<string>("overview");
 
@@ -255,7 +256,7 @@ export default function DashboardReportsPage() {
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4 text-zinc-400" />
               <span className="text-sm text-zinc-400">
-                {dateRange.from?.toLocaleDateString()} - {dateRange.to?.toLocaleDateString()}
+                {formatDateRange(dateRange.from, dateRange.to)}
               </span>
             </div>
           </div>

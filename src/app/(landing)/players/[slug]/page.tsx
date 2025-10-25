@@ -1,10 +1,10 @@
 "use client";
 import Section from "@/components/ui/Section";
-import { ProductCardSkeleton } from "@/components/cards/ProductCardSkeleton";
+import { ProductCardSkeleton } from "@/app/(landing)/components/cards/ProductCardSkeleton";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/Tabs";
 import { playerBySlug, getDisplayName, getHeadshot, getClubName, type PlayerProfile } from "@/lib/mock/playerProfiles";
 import { products } from "@/lib/mock/products";
-import ProductCard from "@/components/cards/ProductCard";
+import ProductCard from "@/app/(landing)/components/cards/ProductCard";
 import { use, useEffect, useState } from "react";
 import Image from "next/image";
 

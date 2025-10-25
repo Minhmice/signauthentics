@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useForm, UseFormReturn, FieldValues } from "react-hook-form";
+import { useForm, UseFormReturn, FieldValues, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import {
@@ -44,6 +44,7 @@ interface BaseFormProps<T extends FieldValues> {
   submitLabel?: string;
   className?: string;
   allowStepNavigation?: boolean;
+  headerContent?: React.ReactNode;
 }
 
 export function BaseForm<T extends FieldValues>({
@@ -58,6 +59,7 @@ export function BaseForm<T extends FieldValues>({
   submitLabel = "Save",
   className,
   allowStepNavigation = true,
+  headerContent,
 }: BaseFormProps<T>) {
   const [currentStep, setCurrentStep] = React.useState(0);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -142,6 +144,13 @@ export function BaseForm<T extends FieldValues>({
         </DialogHeader>
 
         <div className="space-y-6">
+          {/* Header Content */}
+          {headerContent && (
+            <div className="mb-4">
+              {headerContent}
+            </div>
+          )}
+
           {/* Progress Bar */}
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm text-zinc-400">
@@ -165,21 +174,23 @@ export function BaseForm<T extends FieldValues>({
 
           {/* Form Content */}
           <div className="min-h-[400px]">
-            {steps.map((step, index) => {
-              const StepComponent = step.component;
-              return (
-                <FormStep
-                  key={step.id}
-                  isActive={index === currentStep}
-                >
-                  <StepComponent
-                    form={form as unknown as UseFormReturn<T>}
-                    onNext={handleNext}
-                    onPrevious={handlePrevious}
-                  />
-                </FormStep>
-              );
-            })}
+            <FormProvider {...form}>
+              {steps.map((step, index) => {
+                const StepComponent = step.component;
+                return (
+                  <FormStep
+                    key={step.id}
+                    isActive={index === currentStep}
+                  >
+                    <StepComponent
+                      form={form as unknown as UseFormReturn<T>}
+                      onNext={handleNext}
+                      onPrevious={handlePrevious}
+                    />
+                  </FormStep>
+                );
+              })}
+            </FormProvider>
           </div>
         </div>
 

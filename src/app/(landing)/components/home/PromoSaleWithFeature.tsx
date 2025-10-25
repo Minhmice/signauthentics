@@ -1,6 +1,6 @@
 import * as React from "react";
 import { products } from "@/lib/mock/products";
-import ProductCard from "@/components/cards/ProductCard";
+import ProductCard from "@/app/(landing)/components/cards/ProductCard";
 
 export default function PromoSaleWithFeature() {
   const featured = products[0];

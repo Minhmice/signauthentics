@@ -9,7 +9,7 @@
 import * as React from "react";
 import { DashboardSectionHeader } from '@/app/dashboard/components/shared/RoleBadge';
 import { DataTable } from "@/app/dashboard/components/shared/DataTable";
-import { ProductGrid } from "@/components/dashboard/tables/ProductGrid";
+import { ProductGrid } from "@/app/dashboard/components/tables/ProductGrid";
 import { ProductForm } from "./components/ProductForm";
 import { ConfirmDialog } from '@/app/dashboard/components/shared/ConfirmDialog';
 import {

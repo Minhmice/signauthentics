@@ -14,10 +14,12 @@ import { ActionMenu, createActionItems } from '@/app/dashboard/components/shared
 import { StatusBadge } from '@/app/dashboard/components/shared/StatusBadge';
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2, Clock, Gavel, Eye } from "lucide-react";
-import { auctionsAPI, type Auction } from "@/lib/mock/db";
+import { auctionsAPI, productsAPI, type Auction } from "@/lib/mock/db";
 import { formatPrice } from "@/lib/ui/price";
+import { ClientDate } from "@/components/shared/ClientDate";
 import { ColumnDef } from "@tanstack/react-table";
 import { toast } from "sonner";
+import { AuctionForm } from "./components/AuctionForm";
 
 // Countdown Timer Component
 function CountdownTimer({ endTime }: { endTime: string }) {
@@ -105,6 +107,7 @@ const filterOptions: FilterOption[] = [
 export default function DashboardAuctionsPage() {
   const [mounted, setMounted] = React.useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
+  const [isAuctionFormOpen, setIsAuctionFormOpen] = React.useState(false);
   const [auctions, setAuctions] = React.useState<Auction[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [filters, setFilters] = React.useState<Record<string, unknown>>({});
@@ -141,6 +144,52 @@ export default function DashboardAuctionsPage() {
   const handleEdit = (auction: Auction) => {
     // TODO: Open auction edit modal
     toast.info("Edit auction");
+  };
+
+  const handleCreateAuction = () => {
+    setIsAuctionFormOpen(true);
+  };
+
+  const handleSaveAuction = async (data: any) => {
+    try {
+      const productIds = data.productIds || [];
+      const selectedProducts = data.selectedProducts || [];
+      
+      if (productIds.length === 0) {
+        toast.error("Vui lòng chọn ít nhất 1 sản phẩm");
+        return;
+      }
+
+      // Create auction for each selected product
+      const createdAuctions = [];
+      for (let i = 0; i < productIds.length; i++) {
+        const productId = productIds[i];
+        const product = selectedProducts.find((p: any) => p.id === productId);
+        const productTitle = product?.title || "Unknown Product";
+        
+        const newAuction = await auctionsAPI.create({
+          productId: productId,
+          productTitle: productTitle,
+          startAt: data.startAt,
+          endAt: data.endAt,
+          minIncrementVND: data.minIncrementVND,
+          highestBidVND: 0,
+          highestBidderId: "",
+          highestBidderName: "",
+          biddersCount: 0,
+          status: data.status,
+        });
+        
+        createdAuctions.push(newAuction);
+      }
+      
+      // Reload auctions to get the updated list
+      await loadAuctions();
+      toast.success(`Đã tạo thành công ${createdAuctions.length} đấu giá!`);
+    } catch (error) {
+      console.error("Error creating auctions:", error);
+      toast.error("Failed to create auctions");
+    }
   };
 
   const handleDelete = (auction: Auction) => {
@@ -263,7 +312,7 @@ export default function DashboardAuctionsPage() {
       header: "Created",
       cell: ({ row }) => (
         <div className="text-sm">
-          {new Date(row.original.createdAt).toLocaleDateString()}
+          <ClientDate date={row.original.createdAt} variant="vn" />
         </div>
       ),
     },
@@ -307,7 +356,10 @@ export default function DashboardAuctionsPage() {
               onValuesChange={setFilters}
               onClear={() => setFilters({})}
             />
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+            <Button 
+              onClick={handleCreateAuction}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
               <Plus className="w-4 h-4 mr-2" />
               Create Auction
             </Button>
@@ -378,6 +430,13 @@ export default function DashboardAuctionsPage() {
         confirmText="Delete"
         onConfirm={confirmDelete}
         variant="destructive"
+      />
+
+      {/* Auction Form Modal */}
+      <AuctionForm
+        open={isAuctionFormOpen}
+        onOpenChange={setIsAuctionFormOpen}
+        onSave={handleSaveAuction}
       />
     </div>
   );

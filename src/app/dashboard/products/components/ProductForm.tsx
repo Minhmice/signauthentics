@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { UseFormReturn } from "react-hook-form";
 import { toast } from "sonner";
 import { BaseForm, FormStepConfig } from "@/app/dashboard/components/forms/BaseForm";
 import { Step1BasicDetails } from "./ProductFormSteps/Step1BasicDetails";
@@ -102,11 +103,11 @@ export function ProductForm({ open, onOpenChange, product, onSave }: ProductForm
   };
 
   // Step wrapper components
-  const Step1Wrapper = ({ form }: { form: any }) => <Step1BasicDetails form={form as any} images={[]} setImages={() => {}} />;
-  const Step2Wrapper = ({ form }: { form: any }) => <Step2PricingInventory form={form as any} />;
-  const Step3Wrapper = ({ form }: { form: any }) => <Step3Media form={form as any} images={[]} setImages={() => {}} />;
-  const Step4Wrapper = ({ form }: { form: any }) => <Step4Description form={form as any} />;
-  const Step5Wrapper = ({ form }: { form: any }) => <Step5ReviewSummary form={form as any} images={[]} />;
+  const Step1Wrapper = ({ form }: { form: UseFormReturn<ProductFormData> }) => <Step1BasicDetails form={form} images={[]} setImages={() => {}} />;
+  const Step2Wrapper = ({ form }: { form: UseFormReturn<ProductFormData> }) => <Step2PricingInventory form={form} />;
+  const Step3Wrapper = ({ form }: { form: UseFormReturn<ProductFormData> }) => <Step3Media form={form} images={[]} setImages={() => {}} />;
+  const Step4Wrapper = ({ form }: { form: UseFormReturn<ProductFormData> }) => <Step4Description form={form} />;
+  const Step5Wrapper = ({ form }: { form: UseFormReturn<ProductFormData> }) => <Step5ReviewSummary form={form} images={[]} />;
 
   const steps: FormStepConfig<ProductFormData>[] = [
     {

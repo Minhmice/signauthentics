@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 
 interface Step5ReviewSummaryProps {
-  form: UseFormReturn<Record<string, unknown>>;
+  form: UseFormReturn<any>;
   images: Array<{ id: string; url: string; name: string }>;
 }
 

@@ -40,7 +40,7 @@ export function Step5ReviewSummary() {
                 </span>
                 <span className="flex items-center gap-1">
                   <Calendar className="h-4 w-4" />
-                  {formData.publishedAt ? new Date(formData.publishedAt).toLocaleDateString() : "Not set"}
+                  {formData.publishedAt ? new Date(formData.publishedAt).toLocaleDateString('vi-VN') : "Not set"}
                 </span>
               </div>
             </div>

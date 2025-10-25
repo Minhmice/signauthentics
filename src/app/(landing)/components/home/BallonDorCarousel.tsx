@@ -5,7 +5,7 @@
 
 "use client";
 
-import ProductCard from "@/components/cards/ProductCard";
+import ProductCard from "@/app/(landing)/components/cards/ProductCard";
 import { products } from "@/lib/mock/products";
 import { OptimizedCarousel } from "@/components/shared/OptimizedCarousel";
 

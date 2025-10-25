@@ -16,8 +16,10 @@ import { Button } from "@/components/ui/button";
 import { Plus, Trash2, Users, DollarSign, Eye } from "lucide-react";
 import { affiliatesAPI, type Affiliate } from "@/lib/mock/db";
 import { formatPrice } from "@/lib/ui/price";
+import { ClientDate } from "@/components/shared/ClientDate";
 import { ColumnDef } from "@tanstack/react-table";
 import { toast } from "sonner";
+import { AffiliateForm } from "./components/AffiliateForm";
 
 // Filter options for affiliates
 const filterOptions: FilterOption[] = [
@@ -52,10 +54,12 @@ const filterOptions: FilterOption[] = [
 
 export default function DashboardAffiliatesPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
+  const [isFormOpen, setIsFormOpen] = React.useState(false);
   const [affiliates, setAffiliates] = React.useState<Affiliate[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [filters, setFilters] = React.useState<Record<string, unknown>>({});
   const [deleteAffiliateId, setDeleteAffiliateId] = React.useState<string | null>(null);
+  const [selectedAffiliate, setSelectedAffiliate] = React.useState<Affiliate | undefined>();
 
   // Load affiliates
   React.useEffect(() => {
@@ -81,8 +85,32 @@ export default function DashboardAffiliatesPage() {
   };
 
   const handleEdit = (affiliate: Affiliate) => {
-    console.log("Edit affiliate:", affiliate.id);
-    // TODO: Open affiliate edit modal
+    setSelectedAffiliate(affiliate);
+    setIsFormOpen(true);
+  };
+
+  const handleCreateNew = () => {
+    setSelectedAffiliate(undefined);
+    setIsFormOpen(true);
+  };
+
+  const handleSave = async (data: Record<string, unknown>) => {
+    try {
+      if (selectedAffiliate) {
+        // Update existing affiliate
+        await affiliatesAPI.update(selectedAffiliate.id, data);
+        toast.success("Affiliate updated successfully");
+      } else {
+        // Create new affiliate
+        await affiliatesAPI.create(data as any);
+        toast.success("Affiliate created successfully");
+      }
+      await loadAffiliates();
+      setIsFormOpen(false);
+    } catch (error) {
+      toast.error("Failed to save affiliate");
+      console.error("Error saving affiliate:", error);
+    }
   };
 
   const handleDelete = (affiliateId: string) => {
@@ -218,7 +246,7 @@ export default function DashboardAffiliatesPage() {
       header: "Joined",
       cell: ({ row }) => (
         <div className="text-sm">
-          {new Date(row.original.joinedAt).toLocaleDateString()}
+          <ClientDate date={row.original.joinedAt} variant="vn" />
         </div>
       ),
     },
@@ -228,7 +256,7 @@ export default function DashboardAffiliatesPage() {
       cell: ({ row }) => (
         <div className="text-sm">
           {row.original.lastActivityAt 
-            ? new Date(row.original.lastActivityAt).toLocaleDateString()
+            ? <ClientDate date={row.original.lastActivityAt} variant="vn" />
             : "Never"
           }
         </div>
@@ -288,7 +316,10 @@ export default function DashboardAffiliatesPage() {
               onValuesChange={setFilters}
               onClear={() => setFilters({})}
             />
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+            <Button 
+              onClick={handleCreateNew}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
               <Plus className="w-4 h-4 mr-2" />
               Add Affiliate
             </Button>
@@ -350,6 +381,14 @@ export default function DashboardAffiliatesPage() {
         confirmText="Delete"
         onConfirm={confirmDelete}
         variant="destructive"
+      />
+
+      {/* Affiliate Form Dialog */}
+      <AffiliateForm
+        open={isFormOpen}
+        onOpenChange={setIsFormOpen}
+        affiliate={selectedAffiliate as any}
+        onSave={handleSave}
       />
     </div>
   );

@@ -1,6 +1,6 @@
 "use client";
 import Section from "@/components/ui/Section";
-import PlayerTile from "@/components/cards/PlayerTile";
+import PlayerTile from "@/app/(landing)/components/cards/PlayerTile";
 import { playerProfiles } from "@/lib/mock/playerProfiles";
 import { getDisplayName, getHeadshot, getClubName } from "@/lib/mock/playerProfiles";
 import { Search } from "lucide-react";

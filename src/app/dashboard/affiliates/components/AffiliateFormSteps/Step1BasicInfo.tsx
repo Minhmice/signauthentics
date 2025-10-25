@@ -2,11 +2,8 @@
 
 import * as React from "react";
 import { UseFormReturn } from "react-hook-form";
-import { z } from "zod";
-// Import schema from parent component
+import { AffiliateFormData } from "../AffiliateForm";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import {
   FormControl,
   FormField,
@@ -17,42 +14,46 @@ import {
 import { FormSection } from "@/app/dashboard/components/forms/shared/FormSection";
 import { FieldTooltip } from "@/app/dashboard/components/forms/shared/FieldTooltip";
 import { AnimatedSection, AnimatedField } from "@/app/dashboard/components/forms/shared/FormAnimations";
-import { DollarSign, Package, BarChart3, TrendingUp } from "lucide-react";
+import { 
+  User, 
+  Mail,
+  Phone,
+  Building,
+  Globe
+} from "lucide-react";
 
-interface Step2PricingInventoryProps {
-  form: UseFormReturn<any>;
+interface Step1BasicInfoProps {
+  form: UseFormReturn<AffiliateFormData>;
 }
 
-export function Step2PricingInventory({ form }: Step2PricingInventoryProps) {
+export function Step1BasicInfo({ form }: Step1BasicInfoProps) {
   return (
     <AnimatedSection>
       <FormSection
-        title="Giá cả và tồn kho"
-        description="Cấu hình giá bán và quản lý tồn kho"
-        icon={DollarSign}
+        title="Thông tin cơ bản"
+        description="Thông tin liên hệ và công ty của đối tác"
+        icon={User}
       >
         <div className="space-y-6">
-          {/* Pricing */}
+          {/* Name and Email */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <AnimatedField>
               <FormField
                 control={form.control}
-                name="priceVND"
+                name="name"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-zinc-200">
-                      Giá bán (VND) *
-                      <FieldTooltip content="Giá bán sản phẩm bằng VND" />
+                      Tên đối tác *
+                      <FieldTooltip content="Tên đầy đủ của đối tác affiliate" />
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-500" />
                         <Input
                           {...field}
-                          type="number"
-                          placeholder="0"
-                          value={field.value as number || ""}
-                          onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                          value={field.value as string}
+                          placeholder="Nhập tên đối tác"
                           className="bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-500 pl-10"
                         />
                       </div>
@@ -66,22 +67,21 @@ export function Step2PricingInventory({ form }: Step2PricingInventoryProps) {
             <AnimatedField>
               <FormField
                 control={form.control}
-                name="originalPrice"
+                name="email"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-zinc-200">
-                      Giá gốc (VND)
-                      <FieldTooltip content="Giá gốc trước khi giảm giá" />
+                      Email *
+                      <FieldTooltip content="Email liên hệ của đối tác" />
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <TrendingUp className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-500" />
                         <Input
                           {...field}
-                          type="number"
-                          placeholder="0"
-                          value={field.value as number || ""}
-                          onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                          type="email"
+                          value={field.value as string}
+                          placeholder="email@example.com"
                           className="bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-500 pl-10"
                         />
                       </div>
@@ -93,27 +93,26 @@ export function Step2PricingInventory({ form }: Step2PricingInventoryProps) {
             </AnimatedField>
           </div>
 
-          {/* Inventory */}
+          {/* Phone and Company */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <AnimatedField>
               <FormField
                 control={form.control}
-                name="stock"
+                name="phone"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-zinc-200">
-                      Số lượng tồn kho *
-                      <FieldTooltip content="Số lượng sản phẩm hiện có trong kho" />
+                      Số điện thoại *
+                      <FieldTooltip content="Số điện thoại liên hệ" />
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <Package className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                        <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-500" />
                         <Input
                           {...field}
-                          type="number"
-                          placeholder="0"
-                          value={field.value as number || ""}
-                          onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                          type="tel"
+                          value={field.value as string}
+                          placeholder="0123456789"
                           className="bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-500 pl-10"
                         />
                       </div>
@@ -127,22 +126,20 @@ export function Step2PricingInventory({ form }: Step2PricingInventoryProps) {
             <AnimatedField>
               <FormField
                 control={form.control}
-                name="limitedQty"
+                name="company"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-zinc-200">
-                      Số lượng giới hạn
-                      <FieldTooltip content="Số lượng tối đa có thể bán (0 = không giới hạn)" />
+                      Công ty
+                      <FieldTooltip content="Tên công ty (tùy chọn)" />
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <BarChart3 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                        <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-500" />
                         <Input
                           {...field}
-                          type="number"
-                          placeholder="0"
-                          value={field.value as number || ""}
-                          onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                          value={field.value as string}
+                          placeholder="Tên công ty"
                           className="bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-500 pl-10"
                         />
                       </div>
@@ -154,27 +151,27 @@ export function Step2PricingInventory({ form }: Step2PricingInventoryProps) {
             </AnimatedField>
           </div>
 
-          {/* Inventory Settings */}
+          {/* Website */}
           <AnimatedField>
             <FormField
               control={form.control}
-              name="trackInventory"
+              name="website"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium text-zinc-200">
-                    Theo dõi tồn kho
-                    <FieldTooltip content="Tự động cập nhật số lượng khi có đơn hàng" />
+                    Website
+                    <FieldTooltip content="Website của đối tác (tùy chọn)" />
                   </FormLabel>
                   <FormControl>
-                    <div className="flex items-center space-x-2">
-                      <Switch
-                        checked={field.value as boolean}
-                        onCheckedChange={field.onChange}
-                        className="data-[state=checked]:bg-blue-600"
+                    <div className="relative">
+                      <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                      <Input
+                        {...field}
+                        type="url"
+                        value={field.value as string}
+                        placeholder="https://example.com"
+                        className="bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-500 pl-10"
                       />
-                      <Label className="text-sm text-zinc-300">
-                        {field.value ? "Bật" : "Tắt"}
-                      </Label>
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -187,5 +184,3 @@ export function Step2PricingInventory({ form }: Step2PricingInventoryProps) {
     </AnimatedSection>
   );
 }
-
-

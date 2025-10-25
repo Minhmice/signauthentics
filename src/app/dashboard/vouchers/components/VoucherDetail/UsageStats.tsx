@@ -142,13 +142,13 @@ export function UsageStats({ voucher }: UsageStatsProps) {
             <div className="flex justify-between">
               <span className="text-sm text-zinc-300">Valid From:</span>
               <span className="text-sm text-white">
-                {new Date(voucher.validFrom).toLocaleDateString()}
+                {new Date(voucher.validFrom).toLocaleDateString('vi-VN')}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-sm text-zinc-300">Valid To:</span>
               <span className="text-sm text-white">
-                {new Date(voucher.validTo).toLocaleDateString()}
+                {new Date(voucher.validTo).toLocaleDateString('vi-VN')}
               </span>
             </div>
             <div className="flex justify-between">

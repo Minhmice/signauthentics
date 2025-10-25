@@ -27,7 +27,7 @@ export function ResetPasswordDialog({ open, onOpenChange, customer, onConfirm }:
   const handleReset = async () => {
     onConfirm();
     // Generate a temporary password (in real app, this would come from the API)
-    const tempPass = Math.random().toString(36).slice(-8);
+    const tempPass = "temp123"; // Will be generated on client side
     setTempPassword(tempPass);
   };
 

@@ -1,6 +1,6 @@
 "use client";
 import Section from "@/components/ui/Section";
-import { ArticleCard } from "@/components/cards/ArticleCard";
+import { ArticleCard } from "@/app/(landing)/components/cards/ArticleCard";
 import { articles } from "@/lib/mock/articles";
 import { useState } from "react";
 import { Newspaper, TrendingUp } from "lucide-react";
