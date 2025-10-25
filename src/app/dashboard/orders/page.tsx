@@ -2,151 +2,374 @@
 
 /**
  * Orders Management Page
- * Wireframe với role visibility
- * Admin: Full, Seller: Own-only, Customer: Own-only
+ * Full CRUD operations với status management và bulk actions
  */
 
-import { DashboardSectionHeader } from "@/components/dashboard/RoleBadge";
-import { DataTable } from "@/components/dashboard/DataTable";
+import * as React from "react";
+import { DashboardSectionHeader } from "@/app/dashboard/components/shared/RoleBadge";
+import { DataTable } from "@/app/dashboard/components/shared/DataTable";
+import { ConfirmDialog } from "@/app/dashboard/components/shared/ConfirmDialog";
+import {
+  FilterPopover,
+  FilterOption,
+} from "@/app/dashboard/components/shared/FilterPopover";
+import {
+  ActionMenu,
+  createActionItems,
+} from "@/app/dashboard/components/shared/ActionMenu";
+import { StatusBadge } from "@/app/dashboard/components/shared/StatusBadge";
+import { OrderForm } from "./components/OrderForm";
 import { Button } from "@/components/ui/button";
-import { Filter, Eye, Download } from "lucide-react";
+import { Plus, Trash2, Package, Eye, Edit } from "lucide-react";
+import { ordersAPI, type Order } from "@/lib/mock/db";
 import { formatPrice } from "@/lib/ui/price";
 import { ColumnDef } from "@tanstack/react-table";
+import { toast } from "sonner";
 
-type Order = {
-  id: string;
-  buyer: string;
-  email: string;
-  total: number;
-  paymentStatus: "paid" | "pending" | "failed";
-  fulfillmentStatus: "delivered" | "shipped" | "processing" | "cancelled";
-  provider: string;
-  date: string;
-};
-
-const mockOrders: Order[] = [
-  { id: "ORD-001", buyer: "Nguyễn Văn A", email: "nguyenvana@gmail.com", total: 2500000, paymentStatus: "paid", fulfillmentStatus: "delivered", provider: "GHN", date: "2024-01-15" },
-  { id: "ORD-002", buyer: "Trần Thị B", email: "tranthib@gmail.com", total: 5000000, paymentStatus: "pending", fulfillmentStatus: "processing", provider: "GHTK", date: "2024-01-14" },
-  { id: "ORD-003", buyer: "Lê Văn C", email: "levanc@gmail.com", total: 1200000, paymentStatus: "paid", fulfillmentStatus: "delivered", provider: "VNPost", date: "2024-01-13" },
-  { id: "ORD-004", buyer: "Phạm Thị D", email: "phamthid@gmail.com", total: 8500000, paymentStatus: "paid", fulfillmentStatus: "shipped", provider: "GHN", date: "2024-01-12" },
-  { id: "ORD-005", buyer: "Hoàng Văn E", email: "hoangvane@gmail.com", total: 3200000, paymentStatus: "paid", fulfillmentStatus: "delivered", provider: "J&T", date: "2024-01-11" },
-  { id: "ORD-006", buyer: "Đặng Thị F", email: "dangthif@gmail.com", total: 4500000, paymentStatus: "failed", fulfillmentStatus: "cancelled", provider: "N/A", date: "2024-01-10" },
-];
-
-const orderColumns: ColumnDef<Order>[] = [
+// Filter options for orders
+const filterOptions: FilterOption[] = [
   {
-    accessorKey: "id",
-    header: "Order ID",
-    cell: ({ row }) => <span className="font-mono text-xs">{row.original.id}</span>,
+    key: "paymentStatus",
+    label: "Payment Status",
+    type: "select",
+    options: [
+      { value: "paid", label: "Paid" },
+      { value: "pending", label: "Pending" },
+      { value: "unpaid", label: "Unpaid" },
+      { value: "refunded", label: "Refunded" },
+    ],
   },
   {
-    accessorKey: "buyer",
-    header: "Buyer",
-    cell: ({ row }) => (
-      <div>
-        <div className="font-medium text-sm">{row.original.buyer}</div>
-        <div className="text-xs text-zinc-500">{row.original.email}</div>
-      </div>
-    ),
+    key: "fulfillmentStatus",
+    label: "Fulfillment Status",
+    type: "select",
+    options: [
+      { value: "processing", label: "Processing" },
+      { value: "shipped", label: "Shipped" },
+      { value: "delivered", label: "Delivered" },
+      { value: "cancelled", label: "Cancelled" },
+    ],
   },
   {
-    accessorKey: "total",
-    header: "Total",
-    cell: ({ row }) => <span className="font-semibold">{formatPrice(row.original.total, "VND")}</span>,
+    key: "paymentMethod",
+    label: "Payment Method",
+    type: "select",
+    options: [
+      { value: "bank_transfer", label: "Bank Transfer" },
+      { value: "credit_card", label: "Credit Card" },
+      { value: "momo", label: "MoMo" },
+      { value: "zalopay", label: "ZaloPay" },
+    ],
   },
   {
-    accessorKey: "paymentStatus",
-    header: "Payment",
-    cell: ({ row }) => {
-      const status = row.original.paymentStatus;
-      const colorMap = {
-        paid: "bg-green-500/10 text-green-500",
-        pending: "bg-orange-500/10 text-orange-500",
-        failed: "bg-red-500/10 text-red-500",
-      };
-      return (
-        <span className={`px-2 py-1 text-xs rounded-full ${colorMap[status]}`}>
-          {status.charAt(0).toUpperCase() + status.slice(1)}
-        </span>
-      );
-    },
-  },
-  {
-    accessorKey: "fulfillmentStatus",
-    header: "Fulfillment",
-    cell: ({ row }) => {
-      const status = row.original.fulfillmentStatus;
-      const colorMap: Record<string, string> = {
-        delivered: "bg-green-500/10 text-green-500",
-        shipped: "bg-blue-500/10 text-blue-500",
-        processing: "bg-orange-500/10 text-orange-500",
-        cancelled: "bg-red-500/10 text-red-500",
-      };
-      return (
-        <span className={`px-2 py-1 text-xs rounded-full ${colorMap[status]}`}>
-          {status.charAt(0).toUpperCase() + status.slice(1)}
-        </span>
-      );
-    },
-  },
-  {
-    accessorKey: "provider",
-    header: "Provider",
-    cell: ({ row }) => <span className="text-xs text-zinc-400">{row.original.provider}</span>,
-  },
-  {
-    accessorKey: "date",
-    header: "Date",
-    cell: ({ row }) => <span className="text-xs text-zinc-400">{new Date(row.original.date).toLocaleDateString("vi-VN")}</span>,
-  },
-  {
-    id: "actions",
-    header: "Actions",
-    cell: () => (
-      <div className="flex items-center gap-1">
-        <button className="p-2 hover:bg-zinc-800 rounded transition-colors" title="View details">
-          <Eye className="w-4 h-4 text-zinc-400" />
-        </button>
-        <button className="p-2 hover:bg-zinc-800 rounded transition-colors" title="Download invoice">
-          <Download className="w-4 h-4 text-zinc-400" />
-        </button>
-      </div>
-    ),
+    key: "totalRange",
+    label: "Total Range",
+    type: "number",
+    placeholder: "Min total",
   },
 ];
 
 export default function DashboardOrdersPage() {
+  const [mounted, setMounted] = React.useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
+  const [isFormOpen, setIsFormOpen] = React.useState(false);
+  const [orders, setOrders] = React.useState<Order[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [filters, setFilters] = React.useState<Record<string, unknown>>({});
+  const [deleteOrderId, setDeleteOrderId] = React.useState<string | null>(null);
+  const [selectedOrder, setSelectedOrder] = React.useState<Order | undefined>();
+
+  // Mount effect
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Load orders
+  React.useEffect(() => {
+    loadOrders();
+  }, [filters]);
+
+  const loadOrders = async () => {
+    try {
+      setLoading(true);
+      const data = await ordersAPI.getAll();
+      setOrders(data.filter((order): order is Order => order !== null));
+    } catch (error) {
+      toast.error("Failed to load orders");
+      console.error("Error loading orders:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleView = (order: Order) => {
+    // TODO: Implement view order details
+    toast.info("View order details");
+  };
+
+  const handleEdit = (order: Order) => {
+    setSelectedOrder(order);
+    setIsFormOpen(true);
+  };
+
+  const handleCreateNew = () => {
+    setSelectedOrder(undefined);
+    setIsFormOpen(true);
+  };
+
+  const handleSave = async (data: Record<string, unknown>) => {
+    try {
+      if (selectedOrder) {
+        // Update existing order
+        const updatedOrder = await ordersAPI.update(
+          selectedOrder.id,
+          data as Partial<Order>
+        );
+        if (updatedOrder) {
+          setOrders(
+            orders.map((o) => (o.id === selectedOrder.id ? updatedOrder : o))
+          );
+          toast.success("Order updated successfully");
+        }
+      } else {
+        // Create new order
+        const newOrder = await ordersAPI.create(
+          data as Omit<Order, "id" | "createdAt" | "updatedAt">
+        );
+        setOrders([...orders, newOrder]);
+        toast.success("Order created successfully");
+      }
+    } catch (error) {
+      toast.error("Failed to save order");
+      console.error("Error saving order:", error);
+    } finally {
+      setIsFormOpen(false);
+      setSelectedOrder(undefined);
+    }
+  };
+
+  const handleDelete = (order: Order) => {
+    setDeleteOrderId(order.id);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDuplicate = (order: Order) => {
+    const duplicatedOrder = {
+      ...order,
+      id: "", // Will be generated by API
+      orderNumber: `${order.orderId}-COPY`,
+    };
+    setSelectedOrder(duplicatedOrder);
+    setIsFormOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteOrderId) return;
+
+    try {
+      await ordersAPI.delete(deleteOrderId);
+      setOrders(orders.filter((o) => o.id !== deleteOrderId));
+      toast.success("Order cancelled successfully");
+    } catch (error) {
+      toast.error("Failed to cancel order");
+      console.error("Error cancelling order:", error);
+    } finally {
+      setIsDeleteDialogOpen(false);
+      setDeleteOrderId(null);
+    }
+  };
+
+  const handleBulkDelete = async (selectedIds: string[]) => {
+    try {
+      await ordersAPI.bulkDelete(selectedIds);
+      setOrders(orders.filter((o) => !selectedIds.includes(o.id)));
+      toast.success(`${selectedIds.length} orders cancelled successfully`);
+    } catch (error) {
+      toast.error("Failed to cancel orders");
+      console.error("Error cancelling orders:", error);
+    }
+  };
+
+  const handleStatusUpdate = async (
+    orderId: string,
+    status: string,
+    type: "payment" | "fulfillment"
+  ) => {
+    try {
+      const updates =
+        type === "payment"
+          ? { paymentStatus: status }
+          : { fulfillmentStatus: status };
+
+      const updatedOrder = await ordersAPI.update(orderId, updates);
+      setOrders(
+        orders
+          .map((o) => (o.id === orderId ? updatedOrder : o))
+          .filter(Boolean) as typeof orders
+      );
+      toast.success(`Order ${type} status updated to ${status}`);
+    } catch (error) {
+      toast.error(`Failed to update ${type} status`);
+      console.error(`Error updating ${type} status:`, error);
+    }
+  };
+
+  const handleExport = (format: string, data: Order[]) => {
+    toast.success(`Exported ${data.length} orders as ${format.toUpperCase()}`);
+  };
+
+  const orderColumns: ColumnDef<Order>[] = [
+    {
+      accessorKey: "orderId",
+      header: "Order ID",
+      cell: ({ row }) => (
+        <span className="font-mono text-xs">{row.original.orderId}</span>
+      ),
+    },
+    {
+      accessorKey: "buyerName",
+      header: "Customer",
+      cell: ({ row }) => (
+        <div>
+          <div className="font-medium">{row.original.buyerName}</div>
+          <div className="text-xs text-zinc-500">{row.original.buyerEmail}</div>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "items",
+      header: "Items",
+      cell: ({ row }) => (
+        <div className="text-sm">
+          {row.original.items.length} item
+          {row.original.items.length !== 1 ? "s" : ""}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "total",
+      header: "Total",
+      cell: ({ row }) => (
+        <div className="text-right">
+          <div className="font-semibold">
+            {formatPrice(row.original.total, "VND")}
+          </div>
+          {row.original.discount > 0 && (
+            <div className="text-xs text-green-500">
+              -{formatPrice(row.original.discount, "VND")}
+            </div>
+          )}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "paymentStatus",
+      header: "Payment",
+      cell: ({ row }) => <StatusBadge status={row.original.paymentStatus} />,
+    },
+    {
+      accessorKey: "fulfillmentStatus",
+      header: "Fulfillment",
+      cell: ({ row }) => (
+        <StatusBadge status={row.original.fulfillmentStatus} />
+      ),
+    },
+    {
+      accessorKey: "createdAt",
+      header: "Date",
+      cell: ({ row }) => (
+        <div className="text-sm">
+          {new Date(row.original.createdAt).toLocaleDateString()}
+        </div>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => (
+        <ActionMenu
+          actions={createActionItems(
+            () => handleEdit(row.original),
+            () => handleDelete(row.original),
+            () => handleView(row.original)
+          )}
+        />
+      ),
+    },
+  ];
+
+  const bulkActions = [
+    {
+      id: "bulk-cancel",
+      label: "Cancel Selected",
+      icon: <Trash2 className="w-4 h-4" />,
+      variant: "destructive" as const,
+      onClick: handleBulkDelete,
+    },
+  ];
+
   return (
     <div className="space-y-6">
       <DashboardSectionHeader
         title="Orders"
-        description="Quản lý đơn hàng (Order ID, Buyer, Total, Payment, Fulfillment, Provider)"
-        visibleFor={["admin", "seller", "customer"]}
-        ownOnlyFor={["seller", "customer"]}
+        description={`Quản lý đơn hàng - ${orders.length} orders total`}
+        visibleFor={["admin", "seller"]}
+        readOnlyFor={["editor"]}
         actions={
-          <Button variant="outline" className="bg-zinc-900 border-zinc-800 text-zinc-200">
-            <Filter className="w-4 h-4 mr-2" />
-            Filter Status
-          </Button>
+          <div className="flex items-center gap-2">
+            <FilterPopover
+              filters={filterOptions}
+              values={filters}
+              onValuesChange={setFilters}
+              onClear={() => setFilters({})}
+            />
+            <Button
+              onClick={handleCreateNew}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Create Order
+            </Button>
+          </div>
         }
       />
 
-      <DataTable
-        columns={orderColumns}
-        data={mockOrders}
-        searchKey="buyer"
-        searchPlaceholder="Search by buyer..."
-        pageSize={10}
-      />
+      {/* Orders Table */}
+      {mounted ? (
+        <DataTable
+          columns={orderColumns}
+          data={orders}
+          searchKey="orderId"
+          searchPlaceholder="Search orders..."
+          pageSize={10}
+          loading={loading}
+          getRowId={(row) => row.id}
+          bulkActions={bulkActions}
+          onExport={handleExport}
+          onRowView={handleView}
+          onRowEdit={handleEdit}
+          onRowDelete={handleDelete}
+          onRowDuplicate={handleDuplicate}
+        />
+      ) : (
+        <div className="flex items-center justify-center h-32">
+          <div className="text-sm text-gray-500">Loading...</div>
+        </div>
+      )}
 
-      {/* Wireframe Note */}
-      <div className="p-4 bg-zinc-900/50 border border-zinc-800 rounded-lg">
-        <p className="text-xs text-zinc-500">
-          <strong className="text-zinc-400">Detail View:</strong> Timeline trạng thái, Địa chỉ giao, Payment info, Shipping provider + tracking link
-        </p>
-      </div>
+      {/* Order Form Dialog */}
+      <OrderForm order={selectedOrder} />
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        title="Cancel Order"
+        description="Are you sure you want to cancel this order? This action cannot be undone."
+        confirmText="Cancel Order"
+        onConfirm={confirmDelete}
+        variant="destructive"
+      />
     </div>
   );
 }
-
-

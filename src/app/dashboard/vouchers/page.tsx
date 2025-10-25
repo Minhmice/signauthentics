@@ -2,216 +2,496 @@
 
 /**
  * Vouchers Management Page
- * Wireframe với voucher rules
- * Admin: Full, Seller: Own-scope, Customer: Own-vouchers
+ * Full CRUD operations với code generator và usage stats
  */
 
-import { DashboardSectionHeader } from "@/components/dashboard/RoleBadge";
-import { DataTable } from "@/components/dashboard/DataTable";
+import * as React from "react";
+import { DashboardSectionHeader } from "@/app/dashboard/components/shared/RoleBadge";
+import { DataTable } from "@/app/dashboard/components/shared/DataTable";
+import { ConfirmDialog } from "@/app/dashboard/components/shared/ConfirmDialog";
+import {
+  FilterPopover,
+  FilterOption,
+} from "@/app/dashboard/components/shared/FilterPopover";
+import {
+  ActionMenu,
+  createActionItems,
+} from "@/app/dashboard/components/shared/ActionMenu";
+import { StatusBadge } from "@/app/dashboard/components/shared/StatusBadge";
+import { VoucherForm } from "./components/VoucherForm";
+import { VoucherDetail } from "@/app/dashboard/vouchers/components/VoucherDetail";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit, Trash, Percent, DollarSign, Calendar, Users as UsersIcon } from "lucide-react";
+import { Plus, Trash2, Copy, Tag, Eye, Edit } from "lucide-react";
+import { vouchersAPI, type Voucher } from "@/lib/mock/db";
+import { formatPrice } from "@/lib/ui/price";
 import { ColumnDef } from "@tanstack/react-table";
+import { toast } from "sonner";
 
-type Voucher = {
-  id: string;
-  code: string;
-  type: "percent" | "fixed";
-  value: number;
-  scope: "all" | "category" | "product";
-  startDate: string;
-  endDate: string;
-  usageTotal: number;
-  usagePerUser: number;
-  status: "active" | "inactive" | "expired";
-};
+// Voucher Code Generator
+function generateVoucherCode(length: number = 8): string {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
 
-const mockVouchers: Voucher[] = [
+// Filter options for vouchers
+const filterOptions: FilterOption[] = [
   {
-    id: "VOU-001",
-    code: "NEWYEAR2024",
-    type: "percent",
-    value: 20,
-    scope: "all",
-    startDate: "2024-01-01",
-    endDate: "2024-01-31",
-    usageTotal: 150,
-    usagePerUser: 1,
-    status: "active",
+    key: "type",
+    label: "Type",
+    type: "select",
+    options: [
+      { value: "percent", label: "Percentage" },
+      { value: "fixed", label: "Fixed Amount" },
+    ],
   },
   {
-    id: "VOU-002",
-    code: "JERSEY50K",
-    type: "fixed",
-    value: 50000,
-    scope: "category",
-    startDate: "2024-01-15",
-    endDate: "2024-02-15",
-    usageTotal: 50,
-    usagePerUser: 2,
-    status: "active",
+    key: "status",
+    label: "Status",
+    type: "select",
+    options: [
+      { value: "active", label: "Active" },
+      { value: "inactive", label: "Inactive" },
+    ],
   },
   {
-    id: "VOU-003",
-    code: "FIRSTORDER",
-    type: "percent",
-    value: 15,
-    scope: "all",
-    startDate: "2024-01-01",
-    endDate: "2024-12-31",
-    usageTotal: 500,
-    usagePerUser: 1,
-    status: "active",
+    key: "scope",
+    label: "Scope",
+    type: "select",
+    options: [
+      { value: "all", label: "All Products" },
+      { value: "jersey", label: "Jerseys" },
+      { value: "ball", label: "Balls" },
+      { value: "vietnam", label: "Vietnam Only" },
+    ],
   },
   {
-    id: "VOU-004",
-    code: "HOLIDAY2023",
-    type: "percent",
-    value: 30,
-    scope: "all",
-    startDate: "2023-12-01",
-    endDate: "2023-12-31",
-    usageTotal: 200,
-    usagePerUser: 1,
-    status: "expired",
-  },
-];
-
-const voucherColumns: ColumnDef<Voucher>[] = [
-  {
-    accessorKey: "code",
-    header: "Code",
-    cell: ({ row }) => <span className="font-mono font-semibold text-sm">{row.original.code}</span>,
-  },
-  {
-    accessorKey: "type",
-    header: "Type",
-    cell: ({ row }) => {
-      const type = row.original.type;
-      const Icon = type === "percent" ? Percent : DollarSign;
-      const value = type === "percent" ? `${row.original.value}%` : `₫${row.original.value.toLocaleString()}`;
-      return (
-        <span className="inline-flex items-center gap-1.5 text-sm">
-          <Icon className="w-3.5 h-3.5 text-blue-500" />
-          {value}
-        </span>
-      );
-    },
-  },
-  {
-    accessorKey: "scope",
-    header: "Scope",
-    cell: ({ row }) => {
-      const scope = row.original.scope;
-      const colorMap = {
-        all: "bg-purple-500/10 text-purple-500",
-        category: "bg-blue-500/10 text-blue-500",
-        product: "bg-green-500/10 text-green-500",
-      };
-      return (
-        <span className={`px-2 py-1 text-xs rounded-full ${colorMap[scope]}`}>
-          {scope.charAt(0).toUpperCase() + scope.slice(1)}
-        </span>
-      );
-    },
-  },
-  {
-    accessorKey: "startDate",
-    header: "Start",
-    cell: ({ row }) => (
-      <span className="inline-flex items-center gap-1 text-xs text-zinc-400">
-        <Calendar className="w-3 h-3" />
-        {new Date(row.original.startDate).toLocaleDateString("vi-VN")}
-      </span>
-    ),
-  },
-  {
-    accessorKey: "endDate",
-    header: "End",
-    cell: ({ row }) => (
-      <span className="inline-flex items-center gap-1 text-xs text-zinc-400">
-        <Calendar className="w-3 h-3" />
-        {new Date(row.original.endDate).toLocaleDateString("vi-VN")}
-      </span>
-    ),
-  },
-  {
-    accessorKey: "usageTotal",
-    header: "Usage Total",
-    cell: ({ row }) => <span className="text-sm font-medium">{row.original.usageTotal}</span>,
-  },
-  {
-    accessorKey: "usagePerUser",
-    header: "Per User",
-    cell: ({ row }) => (
-      <span className="inline-flex items-center gap-1 text-sm">
-        <UsersIcon className="w-3 h-3 text-zinc-500" />
-        {row.original.usagePerUser}
-      </span>
-    ),
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const status = row.original.status;
-      const colorMap = {
-        active: "bg-green-500/10 text-green-500",
-        inactive: "bg-zinc-500/10 text-zinc-400",
-        expired: "bg-red-500/10 text-red-500",
-      };
-      return (
-        <span className={`px-2 py-1 text-xs rounded-full ${colorMap[status]}`}>
-          {status.charAt(0).toUpperCase() + status.slice(1)}
-        </span>
-      );
-    },
-  },
-  {
-    id: "actions",
-    header: "Actions",
-    cell: () => (
-      <div className="flex items-center gap-1">
-        <button className="p-2 hover:bg-zinc-800 rounded transition-colors">
-          <Edit className="w-4 h-4 text-zinc-400" />
-        </button>
-        <button className="p-2 hover:bg-red-900/50 rounded transition-colors">
-          <Trash className="w-4 h-4 text-red-500" />
-        </button>
-      </div>
-    ),
+    key: "valueRange",
+    label: "Value Range",
+    type: "number",
+    placeholder: "Min value",
   },
 ];
 
 export default function DashboardVouchersPage() {
+  const [mounted, setMounted] = React.useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
+  const [isFormOpen, setIsFormOpen] = React.useState(false);
+  const [isDetailOpen, setIsDetailOpen] = React.useState(false);
+  const [vouchers, setVouchers] = React.useState<Voucher[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [filters, setFilters] = React.useState<Record<string, unknown>>({});
+  const [deleteVoucherId, setDeleteVoucherId] = React.useState<string | null>(
+    null
+  );
+  const [selectedVoucher, setSelectedVoucher] = React.useState<
+    Voucher | undefined
+  >();
+
+  // Mount effect
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Load vouchers
+  React.useEffect(() => {
+    loadVouchers();
+  }, [filters]);
+
+  const loadVouchers = async () => {
+    try {
+      setLoading(true);
+      const data = await vouchersAPI.getAll();
+      setVouchers(
+        data.filter((voucher): voucher is Voucher => voucher !== null)
+      );
+    } catch (error) {
+      toast.error("Failed to load vouchers");
+      console.error("Error loading vouchers:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleView = (voucher: Voucher) => {
+    setSelectedVoucher(voucher);
+    setIsDetailOpen(true);
+  };
+
+  const handleEdit = (voucher: Voucher) => {
+    setSelectedVoucher(voucher);
+    setIsFormOpen(true);
+  };
+
+  const handleDelete = (voucher: Voucher) => {
+    setDeleteVoucherId(voucher.id);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDuplicate = (voucher: Voucher) => {
+    const duplicatedVoucher = {
+      ...voucher,
+      id: "", // Will be generated by API
+      code: generateVoucherCode(),
+      description: `${voucher.description} (Copy)`,
+    };
+    setSelectedVoucher(duplicatedVoucher);
+    setIsFormOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteVoucherId) return;
+
+    try {
+      await vouchersAPI.delete(deleteVoucherId);
+      setVouchers(vouchers.filter((v) => v.id !== deleteVoucherId));
+      toast.success("Voucher deleted successfully");
+    } catch (error) {
+      toast.error("Failed to delete voucher");
+      console.error("Error deleting voucher:", error);
+    } finally {
+      setIsDeleteDialogOpen(false);
+      setDeleteVoucherId(null);
+    }
+  };
+
+  const handleBulkDelete = async (selectedIds: string[]) => {
+    try {
+      await vouchersAPI.bulkDelete(selectedIds);
+      setVouchers(vouchers.filter((v) => !selectedIds.includes(v.id)));
+      toast.success(`${selectedIds.length} vouchers deleted successfully`);
+    } catch (error) {
+      toast.error("Failed to delete vouchers");
+      console.error("Error deleting vouchers:", error);
+    }
+  };
+
+  const handleToggleStatus = async (voucherId: string) => {
+    try {
+      const voucher = vouchers.find((v) => v.id === voucherId);
+      if (!voucher) return;
+
+      const newStatus = voucher.status === "active" ? "inactive" : "active";
+      const updatedVoucher = await vouchersAPI.update(voucherId, {
+        status: newStatus,
+      });
+      setVouchers(
+        vouchers
+          .map((v) => (v.id === voucherId ? updatedVoucher : v))
+          .filter(Boolean) as typeof vouchers
+      );
+      toast.success(
+        `Voucher ${newStatus === "active" ? "activated" : "deactivated"}`
+      );
+    } catch (error) {
+      toast.error("Failed to update voucher status");
+      console.error("Error updating voucher status:", error);
+    }
+  };
+
+  const handleCopyCode = (code: string) => {
+    navigator.clipboard.writeText(code);
+    toast.success("Voucher code copied to clipboard");
+  };
+
+  const handleCreateNew = () => {
+    setSelectedVoucher(undefined);
+    setIsFormOpen(true);
+  };
+
+  const handleSave = async (data: Record<string, unknown>) => {
+    try {
+      if (selectedVoucher) {
+        // Update existing voucher
+        const updatedVoucher = await vouchersAPI.update(
+          selectedVoucher.id,
+          data as Partial<Voucher>
+        );
+        if (updatedVoucher) {
+          setVouchers(
+            vouchers.map((v) =>
+              v.id === selectedVoucher.id ? updatedVoucher : v
+            )
+          );
+          toast.success("Voucher updated successfully");
+        }
+      } else {
+        // Create new voucher
+        const newVoucher = await vouchersAPI.create(
+          data as Omit<Voucher, "id" | "createdAt" | "updatedAt">
+        );
+        setVouchers([...vouchers, newVoucher]);
+        toast.success("Voucher created successfully");
+      }
+    } catch (error) {
+      toast.error("Failed to save voucher");
+      console.error("Error saving voucher:", error);
+    } finally {
+      setIsFormOpen(false);
+      setSelectedVoucher(undefined);
+    }
+  };
+
+  const handleExport = (format: string, data: Voucher[]) => {
+    toast.success(
+      `Exported ${data.length} vouchers as ${format.toUpperCase()}`
+    );
+  };
+
+  const voucherColumns: ColumnDef<Voucher>[] = [
+    {
+      accessorKey: "code",
+      header: "Code",
+      cell: ({ row }) => (
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-sm font-medium">
+            {row.original.code}
+          </span>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => handleCopyCode(row.original.code)}
+            className="h-6 w-6 p-0 hover:bg-zinc-800"
+          >
+            <Copy className="w-3 h-3" />
+          </Button>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "type",
+      header: "Type",
+      cell: ({ row }) => (
+        <div className="text-sm">
+          {row.original.type === "percent" ? "Percentage" : "Fixed Amount"}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "value",
+      header: "Value",
+      cell: ({ row }) => (
+        <div className="text-sm font-medium">
+          {row.original.type === "percent"
+            ? `${row.original.value}%`
+            : formatPrice(row.original.value, "VND")}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "scope",
+      header: "Scope",
+      cell: ({ row }) => (
+        <div className="text-sm capitalize">{row.original.scope}</div>
+      ),
+    },
+    {
+      accessorKey: "usage",
+      header: "Usage",
+      cell: ({ row }) => (
+        <div className="text-sm">
+          <div className="font-medium">
+            {row.original.usedCount} / {row.original.usageLimit}
+          </div>
+          <div className="text-xs text-zinc-500">
+            {Math.round(
+              (row.original.usedCount / row.original.usageLimit) * 100
+            )}
+            % used
+          </div>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "validTo",
+      header: "Expires",
+      cell: ({ row }) => {
+        const isExpired = new Date(row.original.validTo) < new Date();
+        return (
+          <div
+            className={`text-sm ${
+              isExpired ? "text-red-500" : "text-zinc-300"
+            }`}
+          >
+            {new Date(row.original.validTo).toLocaleDateString()}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => <StatusBadge status={row.original.status} />,
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => (
+        <ActionMenu
+          actions={createActionItems(
+            () => handleEdit(row.original),
+            () => handleDelete(row.original),
+            () => handleView(row.original)
+          )}
+        />
+      ),
+    },
+  ];
+
+  const bulkActions = [
+    {
+      id: "bulk-activate",
+      label: "Activate Selected",
+      icon: <Tag className="w-4 h-4" />,
+      variant: "default" as const,
+      onClick: (selectedIds: string[]) => {
+        selectedIds.forEach((id) => handleToggleStatus(id));
+      },
+    },
+    {
+      id: "bulk-delete",
+      label: "Delete Selected",
+      icon: <Trash2 className="w-4 h-4" />,
+      variant: "destructive" as const,
+      onClick: handleBulkDelete,
+    },
+  ];
+
   return (
     <div className="space-y-6">
       <DashboardSectionHeader
         title="Vouchers"
-        description="Quản lý vouchers (Code, Type, Scope, Start/End, Usage)"
+        description={`Quản lý mã giảm giá - ${vouchers.length} vouchers total`}
         visibleFor={["admin", "seller"]}
-        ownOnlyFor={["seller", "customer"]}
+        readOnlyFor={["editor"]}
         actions={
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-            <Plus className="w-4 h-4 mr-2" />
-            Create Voucher
-          </Button>
+          <div className="flex items-center gap-2">
+            <FilterPopover
+              filters={filterOptions}
+              values={filters}
+              onValuesChange={setFilters}
+              onClear={() => setFilters({})}
+            />
+            <Button
+              variant="outline"
+              onClick={handleCreateNew}
+              className="bg-zinc-900 border-zinc-800 text-zinc-200 hover:bg-zinc-800"
+            >
+              <Tag className="w-4 h-4 mr-2" />
+              Generate Code
+            </Button>
+            <Button
+              onClick={handleCreateNew}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Create Voucher
+            </Button>
+          </div>
         }
       />
 
-      <DataTable
-        columns={voucherColumns}
-        data={mockVouchers}
-        searchKey="code"
-        searchPlaceholder="Search voucher code..."
-        pageSize={10}
+      {/* Vouchers Summary */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+          <div className="flex items-center gap-2">
+            <Tag className="w-5 h-5 text-green-500" />
+            <span className="text-sm font-medium text-zinc-300">Active</span>
+          </div>
+          <div className="text-2xl font-bold text-white mt-1">
+            {vouchers.filter((v) => v.status === "active").length}
+          </div>
+        </div>
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+          <div className="flex items-center gap-2">
+            <Tag className="w-5 h-5 text-blue-500" />
+            <span className="text-sm font-medium text-zinc-300">
+              Total Used
+            </span>
+          </div>
+          <div className="text-2xl font-bold text-white mt-1">
+            {vouchers.reduce((sum, v) => sum + v.usedCount, 0)}
+          </div>
+        </div>
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+          <div className="flex items-center gap-2">
+            <Tag className="w-5 h-5 text-purple-500" />
+            <span className="text-sm font-medium text-zinc-300">
+              Percentage
+            </span>
+          </div>
+          <div className="text-2xl font-bold text-white mt-1">
+            {vouchers.filter((v) => v.type === "percent").length}
+          </div>
+        </div>
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+          <div className="flex items-center gap-2">
+            <Tag className="w-5 h-5 text-orange-500" />
+            <span className="text-sm font-medium text-zinc-300">
+              Fixed Amount
+            </span>
+          </div>
+          <div className="text-2xl font-bold text-white mt-1">
+            {vouchers.filter((v) => v.type === "fixed").length}
+          </div>
+        </div>
+      </div>
+
+      {/* Vouchers Table */}
+      {mounted ? (
+        <DataTable
+          columns={voucherColumns}
+          data={vouchers}
+          searchKey="code"
+          searchPlaceholder="Search vouchers..."
+          pageSize={10}
+          loading={loading}
+          getRowId={(row) => row.id}
+          bulkActions={bulkActions}
+          onExport={handleExport}
+          onRowView={handleView}
+          onRowEdit={handleEdit}
+          onRowDelete={handleDelete}
+          onRowDuplicate={handleDuplicate}
+        />
+      ) : (
+        <div className="flex items-center justify-center h-32">
+          <div className="text-sm text-gray-500">Loading...</div>
+        </div>
+      )}
+
+      {/* Voucher Form Dialog */}
+      <VoucherForm
+        open={isFormOpen}
+        onOpenChange={setIsFormOpen}
+        voucher={selectedVoucher}
+        onSave={handleSave}
       />
 
-      {/* Wireframe Note */}
-      <div className="p-4 bg-zinc-900/50 border border-zinc-800 rounded-lg">
-        <p className="text-xs text-zinc-500">
-          <strong className="text-zinc-400">Detail Form:</strong> Quy tắc áp dụng (min order value, applicable categories/products, user eligibility)
-        </p>
-      </div>
+      {/* Voucher Detail Dialog */}
+      <VoucherDetail
+        open={isDetailOpen}
+        onOpenChange={setIsDetailOpen}
+        voucher={selectedVoucher}
+        onEdit={() => {
+          setIsDetailOpen(false);
+          setIsFormOpen(true);
+        }}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        title="Delete Voucher"
+        description="Are you sure you want to delete this voucher? This action cannot be undone."
+        confirmText="Delete"
+        onConfirm={confirmDelete}
+        variant="destructive"
+      />
     </div>
   );
 }

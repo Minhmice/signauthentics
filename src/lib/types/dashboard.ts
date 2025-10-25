@@ -16,6 +16,7 @@ export interface RolePermissions {
     auctions: AccessLevel;
     vouchers: AccessLevel;
     users: AccessLevel;
+    customers: AccessLevel;
     affiliates: AccessLevel;
     content: AccessLevel;
     reports: AccessLevel;

@@ -2,133 +2,416 @@
 
 /**
  * Users Management Page
- * Wireframe với role management
- * Admin: Full control, Others: Hidden
+ * Full CRUD operations với role management và status toggle
  */
 
-import { DashboardSectionHeader } from "@/components/dashboard/RoleBadge";
-import { DataTable } from "@/components/dashboard/DataTable";
+import * as React from "react";
+import { DashboardSectionHeader } from '@/app/dashboard/components/shared/RoleBadge';
+import { DataTable } from "@/app/dashboard/components/shared/DataTable";
+import { ConfirmDialog } from '@/app/dashboard/components/shared/ConfirmDialog';
+import { FilterPopover, FilterOption } from '@/app/dashboard/components/shared/FilterPopover';
+import { ActionMenu, createActionItems } from '@/app/dashboard/components/shared/ActionMenu';
+import { StatusBadge } from '@/app/dashboard/components/shared/StatusBadge';
+import { UserForm } from "./components/UserForm";
 import { Button } from "@/components/ui/button";
-import { UserPlus, Edit, Trash, Shield } from "lucide-react";
+import { Plus, Trash2, User as UserIcon, Shield } from "lucide-react";
+import { usersAPI, type User } from "@/lib/mock/db";
 import { ColumnDef } from "@tanstack/react-table";
+import { toast } from "sonner";
 
-type User = {
-  id: string;
-  name: string;
-  email: string;
-  role: "admin" | "seller" | "editor" | "customer" | "affiliate";
-  createdAt: string;
-  lastActive: string;
-  status: "active" | "inactive";
-};
-
-const mockUsers: User[] = [
-  { id: "USR-001", name: "Admin User", email: "admin@signauthentics.vn", role: "admin", createdAt: "2023-01-01", lastActive: "2m ago", status: "active" },
-  { id: "USR-002", name: "Seller John", email: "john@seller.com", role: "seller", createdAt: "2023-06-15", lastActive: "1h ago", status: "active" },
-  { id: "USR-003", name: "Editor Jane", email: "jane@editor.com", role: "editor", createdAt: "2023-08-20", lastActive: "3h ago", status: "active" },
-  { id: "USR-004", name: "Customer Minh", email: "minh@customer.com", role: "customer", createdAt: "2024-01-10", lastActive: "1d ago", status: "active" },
-  { id: "USR-005", name: "Affiliate Partner", email: "partner@affiliate.com", role: "affiliate", createdAt: "2023-12-01", lastActive: "2d ago", status: "active" },
-];
-
-const roleColors = {
-  admin: "bg-red-500/10 text-red-500",
-  seller: "bg-blue-500/10 text-blue-500",
-  editor: "bg-purple-500/10 text-purple-500",
-  customer: "bg-green-500/10 text-green-500",
-  affiliate: "bg-orange-500/10 text-orange-500",
-};
-
-const userColumns: ColumnDef<User>[] = [
+// Filter options for users
+const filterOptions: FilterOption[] = [
   {
-    accessorKey: "name",
-    header: "Name",
-    cell: ({ row }) => (
-      <div>
-        <div className="font-medium text-sm">{row.original.name}</div>
-        <div className="text-xs text-zinc-500">{row.original.email}</div>
-      </div>
-    ),
+    key: "role",
+    label: "Role",
+    type: "select",
+    options: [
+      { value: "admin", label: "Admin" },
+      { value: "seller", label: "Seller" },
+      { value: "editor", label: "Editor" },
+      { value: "affiliate", label: "Affiliate" },
+    ],
   },
   {
-    accessorKey: "role",
-    header: "Role",
-    cell: ({ row }) => {
-      const role = row.original.role;
-      return (
-        <span className={`px-2 py-1 text-xs rounded-full inline-flex items-center gap-1 ${roleColors[role]}`}>
-          <Shield className="w-3 h-3" />
-          {role.charAt(0).toUpperCase() + role.slice(1)}
-        </span>
-      );
-    },
+    key: "status",
+    label: "Status",
+    type: "select",
+    options: [
+      { value: "active", label: "Active" },
+      { value: "inactive", label: "Inactive" },
+    ],
   },
   {
-    accessorKey: "createdAt",
-    header: "Created",
-    cell: ({ row }) => <span className="text-xs text-zinc-400">{new Date(row.original.createdAt).toLocaleDateString("vi-VN")}</span>,
+    key: "totalSpentRange",
+    label: "Total Spent",
+    type: "number",
+    placeholder: "Min amount spent",
   },
   {
-    accessorKey: "lastActive",
-    header: "Last Active",
-    cell: ({ row }) => <span className="text-xs text-zinc-400">{row.original.lastActive}</span>,
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const status = row.original.status;
-      return (
-        <span className={`px-2 py-1 text-xs rounded-full ${status === "active" ? "bg-green-500/10 text-green-500" : "bg-zinc-500/10 text-zinc-400"}`}>
-          {status.charAt(0).toUpperCase() + status.slice(1)}
-        </span>
-      );
-    },
-  },
-  {
-    id: "actions",
-    header: "Actions",
-    cell: () => (
-      <div className="flex items-center gap-1">
-        <button className="p-2 hover:bg-zinc-800 rounded transition-colors" title="Change role">
-          <Edit className="w-4 h-4 text-zinc-400" />
-        </button>
-        <button className="p-2 hover:bg-red-900/50 rounded transition-colors" title="Delete user">
-          <Trash className="w-4 h-4 text-red-500" />
-        </button>
-      </div>
-    ),
+    key: "totalOrdersRange",
+    label: "Total Orders",
+    type: "number",
+    placeholder: "Min orders",
   },
 ];
 
 export default function DashboardUsersPage() {
+  const [mounted, setMounted] = React.useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
+  const [isFormOpen, setIsFormOpen] = React.useState(false);
+  const [users, setUsers] = React.useState<User[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [filters, setFilters] = React.useState<Record<string, unknown>>({});
+  const [deleteUserId, setDeleteUserId] = React.useState<string | null>(null);
+  const [selectedUser, setSelectedUser] = React.useState<User | undefined>();
+
+  // Mount effect
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Load users
+  React.useEffect(() => {
+    loadUsers();
+  }, [filters]);
+
+  const loadUsers = async () => {
+    try {
+      setLoading(true);
+      const data = await usersAPI.getAll();
+      setUsers(data.filter((user): user is User => user !== null));
+    } catch (error) {
+      toast.error("Failed to load users");
+      console.error("Error loading users:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleView = (_user: User) => {
+    // TODO: Implement view user details
+    toast.info("View user details");
+  };
+
+  const handleEdit = (user: User) => {
+    setSelectedUser(user);
+    setIsFormOpen(true);
+  };
+
+  const handleCreateNew = () => {
+    setSelectedUser(undefined);
+    setIsFormOpen(true);
+  };
+
+  const handleSave = async (data: Record<string, unknown>) => {
+    try {
+      if (selectedUser) {
+        // Update existing user
+        const updatedUser = await usersAPI.update(selectedUser.id, data as Partial<User>);
+        if (updatedUser) {
+          setUsers(users.map(u => u.id === selectedUser.id ? updatedUser : u));
+          toast.success("User updated successfully");
+        }
+      } else {
+        // Create new user
+        const newUser = await usersAPI.create(data as Omit<User, 'id' | 'createdAt' | 'updatedAt'>);
+        setUsers([...users, newUser]);
+        toast.success("User created successfully");
+      }
+    } catch (error) {
+      toast.error("Failed to save user");
+      console.error("Error saving user:", error);
+    } finally {
+      setIsFormOpen(false);
+      setSelectedUser(undefined);
+    }
+  };
+
+  const handleDelete = (user: User) => {
+    setDeleteUserId(user.id);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDuplicate = (user: User) => {
+    const duplicatedUser = {
+      ...user,
+      id: "", // Will be generated by API
+      email: `${user.email.split('@')[0]}_copy@${user.email.split('@')[1]}`,
+    };
+    setSelectedUser(duplicatedUser);
+    setIsFormOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteUserId) return;
+    
+    try {
+      await usersAPI.delete(deleteUserId);
+      setUsers(users.filter(u => u.id !== deleteUserId));
+      toast.success("User deleted successfully");
+    } catch (error) {
+      toast.error("Failed to delete user");
+      console.error("Error deleting user:", error);
+    } finally {
+      setIsDeleteDialogOpen(false);
+      setDeleteUserId(null);
+    }
+  };
+
+  const handleBulkDelete = async (selectedIds: string[]) => {
+    try {
+      await usersAPI.bulkDelete(selectedIds);
+      setUsers(users.filter(u => !selectedIds.includes(u.id)));
+      toast.success(`${selectedIds.length} users deleted successfully`);
+    } catch (error) {
+      toast.error("Failed to delete users");
+      console.error("Error deleting users:", error);
+    }
+  };
+
+  const handleToggleStatus = async (userId: string) => {
+    try {
+      const user = users.find(u => u.id === userId);
+      if (!user) return;
+
+      const newStatus = user.status === 'active' ? 'inactive' : 'active';
+      const updatedUser = await usersAPI.update(userId, { status: newStatus });
+      setUsers(users.map(u => u.id === userId ? updatedUser : u).filter(Boolean) as typeof users);
+      toast.success(`User ${newStatus === 'active' ? 'activated' : 'deactivated'}`);
+    } catch (error) {
+      toast.error("Failed to update user status");
+      console.error("Error updating user status:", error);
+    }
+  };
+
+
+  const handleExport = (format: string, data: User[]) => {
+    toast.success(`Exported ${data.length} users as ${format.toUpperCase()}`);
+  };
+
+  const userColumns: ColumnDef<User>[] = [
+    {
+      accessorKey: "name",
+      header: "User",
+      cell: ({ row }) => (
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-zinc-800 rounded-full flex items-center justify-center">
+            <UserIcon className="w-4 h-4 text-zinc-400" />
+          </div>
+          <div>
+            <div className="font-medium">{row.original.name}</div>
+            <div className="text-xs text-zinc-500">{row.original.email}</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "role",
+      header: "Role",
+      cell: ({ row }) => {
+        const roleColors: Record<string, string> = {
+          admin: "bg-red-500/10 text-red-500 border-red-500/20",
+          seller: "bg-blue-500/10 text-blue-500 border-blue-500/20",
+          editor: "bg-green-500/10 text-green-500 border-green-500/20",
+          customer: "bg-zinc-500/10 text-zinc-500 border-zinc-500/20",
+          affiliate: "bg-purple-500/10 text-purple-500 border-purple-500/20",
+        };
+        return (
+          <span className={`px-2 py-1 text-xs rounded-full border ${roleColors[row.original.role] || roleColors.customer}`}>
+            {row.original.role.charAt(0).toUpperCase() + row.original.role.slice(1)}
+          </span>
+        );
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => <StatusBadge status={row.original.status} />,
+    },
+    {
+      accessorKey: "totalOrders",
+      header: "Orders",
+      cell: ({ row }) => (
+        <div className="text-sm text-center">
+          <div className="font-medium">-</div>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "totalSpent",
+      header: "Total Spent",
+      cell: () => (
+        <div className="text-sm text-right">
+          <div className="font-medium">-</div>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "joinedAt",
+      header: "Joined",
+      cell: ({ row }) => (
+        <div className="text-sm">
+          {new Date(row.original.joinedAt).toLocaleDateString()}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "lastLoginAt",
+      header: "Last Login",
+      cell: ({ row }) => (
+        <div className="text-sm">
+          {row.original.lastLoginAt 
+            ? new Date(row.original.lastLoginAt).toLocaleDateString()
+            : "Never"
+          }
+        </div>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => (
+        <ActionMenu
+          actions={createActionItems(
+            () => handleEdit(row.original),
+            () => handleDelete(row.original),
+            () => handleView(row.original)
+          )}
+        />
+      ),
+    },
+  ];
+
+  const bulkActions = [
+    {
+      id: "bulk-activate",
+      label: "Activate Selected",
+      icon: <UserIcon className="w-4 h-4" />,
+      variant: "default" as const,
+      onClick: (selectedIds: string[]) => {
+        selectedIds.forEach(id => handleToggleStatus(id));
+      },
+    },
+    {
+      id: "bulk-delete",
+      label: "Delete Selected",
+      icon: <Trash2 className="w-4 h-4" />,
+      variant: "destructive" as const,
+      onClick: handleBulkDelete,
+    },
+  ];
+
   return (
     <div className="space-y-6">
       <DashboardSectionHeader
         title="Users"
-        description="Quản lý người dùng (Name, Email, Role, Created, Last active)"
+        description={`Quản lý người dùng - ${users.length} users total`}
         visibleFor={["admin"]}
+        readOnlyFor={["seller", "editor"]}
         actions={
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-            <UserPlus className="w-4 h-4 mr-2" />
-            Add User
-          </Button>
+          <div className="flex items-center gap-2">
+            <FilterPopover
+              filters={filterOptions}
+              values={filters}
+              onValuesChange={setFilters}
+              onClear={() => setFilters({})}
+            />
+            <Button onClick={handleCreateNew} className="bg-blue-600 hover:bg-blue-700 text-white">
+              <Plus className="w-4 h-4 mr-2" />
+              Add User
+            </Button>
+          </div>
         }
       />
 
-      <DataTable
-        columns={userColumns}
-        data={mockUsers}
-        searchKey="name"
-        searchPlaceholder="Search users..."
-        pageSize={10}
+      {/* Users Summary */}
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+          <div className="flex items-center gap-2">
+            <UserIcon className="w-5 h-5 text-blue-500" />
+            <span className="text-sm font-medium text-zinc-300">Total Users</span>
+          </div>
+          <div className="text-2xl font-bold text-white mt-1">{users.length}</div>
+        </div>
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+          <div className="flex items-center gap-2">
+            <Shield className="w-5 h-5 text-red-500" />
+            <span className="text-sm font-medium text-zinc-300">Admins</span>
+          </div>
+          <div className="text-2xl font-bold text-white mt-1">
+            {users.filter(u => u.role === 'admin').length}
+          </div>
+        </div>
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+          <div className="flex items-center gap-2">
+            <UserIcon className="w-5 h-5 text-green-500" />
+            <span className="text-sm font-medium text-zinc-300">Customers</span>
+          </div>
+          <div className="text-2xl font-bold text-white mt-1">
+            {users.filter(u => u.role === 'customer').length}
+          </div>
+        </div>
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+          <div className="flex items-center gap-2">
+            <UserIcon className="w-5 h-5 text-purple-500" />
+            <span className="text-sm font-medium text-zinc-300">Affiliates</span>
+          </div>
+          <div className="text-2xl font-bold text-white mt-1">
+            {users.filter(u => u.role === 'affiliate').length}
+          </div>
+        </div>
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+          <div className="flex items-center gap-2">
+            <UserIcon className="w-5 h-5 text-yellow-500" />
+            <span className="text-sm font-medium text-zinc-300">Active</span>
+          </div>
+          <div className="text-2xl font-bold text-white mt-1">
+            {users.filter(u => u.status === 'active').length}
+          </div>
+        </div>
+      </div>
+
+      {/* Users Table */}
+      {mounted ? (
+        <DataTable
+          columns={userColumns}
+          data={users}
+          searchKey="name"
+          searchPlaceholder="Search users..."
+          pageSize={10}
+          loading={loading}
+          getRowId={(row) => row.id}
+          bulkActions={bulkActions}
+          onExport={handleExport}
+          onRowView={handleView}
+          onRowEdit={handleEdit}
+          onRowDelete={handleDelete}
+          onRowDuplicate={handleDuplicate}
+        />
+      ) : (
+        <div className="flex items-center justify-center h-32">
+          <div className="text-sm text-gray-500">Loading...</div>
+        </div>
+      )}
+
+      {/* User Form Dialog */}
+      <UserForm
+        open={isFormOpen}
+        onOpenChange={setIsFormOpen}
+        user={selectedUser}
+        onSave={handleSave}
       />
 
-      {/* Wireframe Note */}
-      <div className="p-4 bg-zinc-900/50 border border-zinc-800 rounded-lg">
-        <p className="text-xs text-zinc-500">
-          <strong className="text-zinc-400">Action:</strong> Change role dropdown - thay đổi quyền truy cập ngay lập tức
-        </p>
-      </div>
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        title="Delete User"
+        description="Are you sure you want to delete this user? This action cannot be undone."
+        confirmText="Delete"
+        onConfirm={confirmDelete}
+        variant="destructive"
+      />
     </div>
   );
 }

@@ -1,0 +1,656 @@
+{
+  "products": [
+    {
+      "id": "p1",
+      "slug": "signed-jersey-quang-hai-19",
+      "title": "Signed Jersey Quang Hải #19",
+      "playerId": "pl1",
+      "category": "Jersey",
+      "rarity": "legendary",
+      "limitedQty": 50,
+      "priceVND": 4500000,
+      "accentHex": "#1E90FF",
+      "images": ["/PlayerImages/chandung22tuyenthu1.jpg", "/PlayerImages/chandung22tuyenthu2.jpg"],
+      "relatedIds": ["p2", "p3", "p4", "p5", "p6", "p7"],
+      "stock": 25,
+      "status": "active",
+      "description": "Authentic signed jersey from Vietnam national team star Quang Hải",
+      "createdAt": "2024-01-15T10:00:00Z",
+      "updatedAt": "2024-01-20T15:30:00Z"
+    },
+    {
+      "id": "p2",
+      "slug": "signed-ball-vietnam-u22",
+      "title": "Signed Ball Vietnam U22",
+      "playerId": "pl2",
+      "category": "Ball",
+      "rarity": "rare",
+      "limitedQty": 100,
+      "priceVND": 3200000,
+      "accentHex": "#E11D48",
+      "images": ["/PlayerImages/chandung22tuyenthu3.jpg"],
+      "relatedIds": ["p1", "p3", "p4", "p5", "p6", "p7"],
+      "stock": 45,
+      "status": "active",
+      "description": "Official match ball signed by Vietnam U22 players",
+      "createdAt": "2024-01-16T09:00:00Z",
+      "updatedAt": "2024-01-21T12:00:00Z"
+    },
+    {
+      "id": "p3",
+      "slug": "signed-boots-cong-phuong",
+      "title": "Signed Boots Công Phượng",
+      "playerId": "pl3",
+      "category": "Boots",
+      "rarity": "ultra",
+      "limitedQty": 20,
+      "priceVND": 6800000,
+      "accentHex": "#16A34A",
+      "images": ["/PlayerImages/chandung22tuyenthu4.jpg", "/PlayerImages/chandung22tuyenthu5.jpg"],
+      "relatedIds": ["p1", "p2", "p4", "p5", "p6", "p7"],
+      "stock": 8,
+      "status": "active",
+      "description": "Game-worn boots from Vietnam's star striker Công Phượng",
+      "createdAt": "2024-01-17T14:00:00Z",
+      "updatedAt": "2024-01-22T16:45:00Z"
+    },
+    {
+      "id": "p4",
+      "slug": "signed-photo-van-hau",
+      "title": "Signed Photo Văn Hậu",
+      "playerId": "pl4",
+      "category": "Photo",
+      "rarity": "limited",
+      "limitedQty": 200,
+      "priceVND": 1500000,
+      "accentHex": "#F59E0B",
+      "images": ["/PlayerImages/chandung22tuyenthu6.jpg"],
+      "relatedIds": ["p1", "p2", "p3", "p5", "p6", "p7"],
+      "stock": 120,
+      "status": "active",
+      "description": "Official photo signed by Vietnam defender Văn Hậu",
+      "createdAt": "2024-01-18T11:00:00Z",
+      "updatedAt": "2024-01-23T10:30:00Z"
+    },
+    {
+      "id": "p5",
+      "slug": "signed-jersey-tien-linh",
+      "title": "Signed Jersey Tiến Linh",
+      "playerId": "pl5",
+      "category": "Jersey",
+      "rarity": "rare",
+      "limitedQty": 75,
+      "priceVND": 4200000,
+      "accentHex": "#1E90FF",
+      "images": ["/PlayerImages/chandung22tuyenthu7.jpg", "/PlayerImages/chandung22tuyenthu8.jpg"],
+      "relatedIds": ["p1", "p2", "p3", "p4", "p6", "p7"],
+      "stock": 30,
+      "status": "active",
+      "description": "Authentic signed jersey from Vietnam striker Tiến Linh",
+      "createdAt": "2024-01-19T08:00:00Z",
+      "updatedAt": "2024-01-24T14:20:00Z"
+    },
+    {
+      "id": "p6",
+      "slug": "signed-gloves-van-lam",
+      "title": "Signed Gloves Văn Lâm",
+      "playerId": "pl6",
+      "category": "Other",
+      "rarity": "legendary",
+      "limitedQty": 30,
+      "priceVND": 5500000,
+      "accentHex": "#E11D48",
+      "images": ["/PlayerImages/chandung22tuyenthu9.jpg"],
+      "relatedIds": ["p1", "p2", "p3", "p4", "p5", "p7"],
+      "stock": 12,
+      "status": "active",
+      "description": "Game-worn goalkeeper gloves signed by Văn Lâm",
+      "createdAt": "2024-01-20T13:00:00Z",
+      "updatedAt": "2024-01-25T09:15:00Z"
+    },
+    {
+      "id": "p7",
+      "slug": "signed-ball-vietnam-national",
+      "title": "Signed Ball Vietnam National",
+      "playerId": "pl7",
+      "category": "Ball",
+      "rarity": "ultra",
+      "limitedQty": 15,
+      "priceVND": 7500000,
+      "accentHex": "#16A34A",
+      "images": ["/PlayerImages/chandung22tuyenthu10.jpg", "/PlayerImages/chandung22tuyenthu11.jpg"],
+      "relatedIds": ["p1", "p2", "p3", "p4", "p5", "p6"],
+      "stock": 5,
+      "status": "active",
+      "description": "Official Vietnam national team ball signed by all players",
+      "createdAt": "2024-01-21T16:00:00Z",
+      "updatedAt": "2024-01-26T11:45:00Z"
+    },
+    {
+      "id": "p8",
+      "slug": "signed-jersey-van-hau",
+      "title": "Signed Jersey Văn Hậu",
+      "playerId": "pl4",
+      "category": "Jersey",
+      "rarity": "limited",
+      "limitedQty": 100,
+      "priceVND": 3800000,
+      "accentHex": "#F59E0B",
+      "images": ["/PlayerImages/chandung22tuyenthu12.jpg"],
+      "relatedIds": ["p1", "p2", "p3", "p4", "p5", "p6"],
+      "stock": 60,
+      "status": "active",
+      "description": "Authentic signed jersey from Vietnam defender Văn Hậu",
+      "createdAt": "2024-01-22T10:00:00Z",
+      "updatedAt": "2024-01-27T13:30:00Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": "ord-001",
+      "orderId": "ORD-1234",
+      "buyerId": "user-001",
+      "buyerName": "Nguyễn Văn A",
+      "buyerEmail": "nguyenvana@email.com",
+      "items": [
+        { "productId": "p1", "quantity": 1, "priceVND": 4500000 },
+        { "productId": "p2", "quantity": 2, "priceVND": 3200000 }
+      ],
+      "subtotal": 10900000,
+      "shipping": 50000,
+      "discount": 500000,
+      "total": 10450000,
+      "paymentMethod": "bank_transfer",
+      "paymentStatus": "paid",
+      "fulfillmentStatus": "shipped",
+      "shippingAddress": {
+        "name": "Nguyễn Văn A",
+        "address": "123 Đường ABC, Quận 1",
+        "city": "TP.HCM",
+        "phone": "0901234567"
+      },
+      "createdAt": "2024-01-20T10:30:00Z",
+      "updatedAt": "2024-01-21T14:20:00Z"
+    },
+    {
+      "id": "ord-002",
+      "orderId": "ORD-1235",
+      "buyerId": "user-002",
+      "buyerName": "Trần Thị B",
+      "buyerEmail": "tranthib@email.com",
+      "items": [
+        { "productId": "p3", "quantity": 1, "priceVND": 6800000 }
+      ],
+      "subtotal": 6800000,
+      "shipping": 50000,
+      "discount": 0,
+      "total": 6850000,
+      "paymentMethod": "credit_card",
+      "paymentStatus": "pending",
+      "fulfillmentStatus": "processing",
+      "shippingAddress": {
+        "name": "Trần Thị B",
+        "address": "456 Đường XYZ, Quận 3",
+        "city": "TP.HCM",
+        "phone": "0907654321"
+      },
+      "createdAt": "2024-01-21T15:45:00Z",
+      "updatedAt": "2024-01-22T09:10:00Z"
+    },
+    {
+      "id": "ord-003",
+      "orderId": "ORD-1236",
+      "buyerId": "user-003",
+      "buyerName": "Lê Văn C",
+      "buyerEmail": "levanc@email.com",
+      "items": [
+        { "productId": "p4", "quantity": 3, "priceVND": 1500000 }
+      ],
+      "subtotal": 4500000,
+      "shipping": 50000,
+      "discount": 200000,
+      "total": 4350000,
+      "paymentMethod": "momo",
+      "paymentStatus": "paid",
+      "fulfillmentStatus": "delivered",
+      "shippingAddress": {
+        "name": "Lê Văn C",
+        "address": "789 Đường DEF, Quận 5",
+        "city": "TP.HCM",
+        "phone": "0909876543"
+      },
+      "createdAt": "2024-01-19T08:20:00Z",
+      "updatedAt": "2024-01-23T16:30:00Z"
+    }
+  ],
+  "auctions": [
+    {
+      "id": "auc-001",
+      "productId": "p1",
+      "productTitle": "Signed Jersey Quang Hải #19",
+      "startAt": "2024-01-20T10:00:00Z",
+      "endAt": "2024-01-25T18:00:00Z",
+      "minIncrementVND": 100000,
+      "highestBidVND": 8500000,
+      "highestBidderId": "user-004",
+      "highestBidderName": "Phạm Văn D",
+      "biddersCount": 12,
+      "status": "live",
+      "createdAt": "2024-01-19T09:00:00Z",
+      "updatedAt": "2024-01-22T14:30:00Z"
+    },
+    {
+      "id": "auc-002",
+      "productId": "p2",
+      "productTitle": "Signed Ball Vietnam U22",
+      "startAt": "2024-01-22T14:00:00Z",
+      "endAt": "2024-01-27T20:00:00Z",
+      "minIncrementVND": 50000,
+      "highestBidVND": 4200000,
+      "highestBidderId": "user-005",
+      "highestBidderName": "Hoàng Thị E",
+      "biddersCount": 8,
+      "status": "live",
+      "createdAt": "2024-01-21T10:00:00Z",
+      "updatedAt": "2024-01-23T11:15:00Z"
+    },
+    {
+      "id": "auc-003",
+      "productId": "p3",
+      "productTitle": "Signed Boots Công Phượng",
+      "startAt": "2024-01-18T12:00:00Z",
+      "endAt": "2024-01-23T15:00:00Z",
+      "minIncrementVND": 200000,
+      "highestBidVND": 6700000,
+      "highestBidderId": "user-006",
+      "highestBidderName": "Vũ Văn F",
+      "biddersCount": 15,
+      "status": "ended",
+      "createdAt": "2024-01-17T08:00:00Z",
+      "updatedAt": "2024-01-23T15:00:00Z"
+    }
+  ],
+  "vouchers": [
+    {
+      "id": "v1",
+      "code": "WELCOME10",
+      "type": "percent",
+      "value": 10,
+      "scope": "all",
+      "usageLimit": 1000,
+      "usedCount": 245,
+      "validFrom": "2024-01-01T00:00:00Z",
+      "validTo": "2024-12-31T23:59:59Z",
+      "status": "active",
+      "description": "10% off for new customers",
+      "createdAt": "2024-01-01T00:00:00Z",
+      "updatedAt": "2024-01-20T10:00:00Z"
+    },
+    {
+      "id": "v2",
+      "code": "FREESHIP",
+      "type": "fixed",
+      "value": 50000,
+      "scope": "vietnam",
+      "usageLimit": 500,
+      "usedCount": 89,
+      "validFrom": "2024-01-15T00:00:00Z",
+      "validTo": "2024-03-15T23:59:59Z",
+      "status": "active",
+      "description": "Free shipping for orders in Vietnam",
+      "createdAt": "2024-01-15T00:00:00Z",
+      "updatedAt": "2024-01-22T14:30:00Z"
+    },
+    {
+      "id": "v3",
+      "code": "VIP20",
+      "type": "percent",
+      "value": 20,
+      "scope": "jersey",
+      "usageLimit": 100,
+      "usedCount": 12,
+      "validFrom": "2024-01-10T00:00:00Z",
+      "validTo": "2024-02-10T23:59:59Z",
+      "status": "active",
+      "description": "20% off on all jerseys",
+      "createdAt": "2024-01-10T00:00:00Z",
+      "updatedAt": "2024-01-21T16:45:00Z"
+    }
+  ],
+  "users": [
+    {
+      "id": "admin-001",
+      "name": "Admin User",
+      "email": "admin@signauthentics.com",
+      "role": "admin",
+      "status": "active",
+      "avatar": null,
+      "department": "Management",
+      "joinedAt": "2023-12-01T00:00:00Z",
+      "lastLoginAt": "2024-01-23T17:00:00Z"
+    },
+    {
+      "id": "seller-001",
+      "name": "Seller User",
+      "email": "seller@signauthentics.com",
+      "role": "seller",
+      "status": "active",
+      "avatar": null,
+      "department": "Sales",
+      "joinedAt": "2023-12-15T00:00:00Z",
+      "lastLoginAt": "2024-01-23T16:45:00Z"
+    },
+    {
+      "id": "editor-001",
+      "name": "Editor User",
+      "email": "editor@signauthentics.com",
+      "role": "editor",
+      "status": "active",
+      "avatar": null,
+      "department": "Content",
+      "joinedAt": "2023-12-20T00:00:00Z",
+      "lastLoginAt": "2024-01-23T15:30:00Z"
+    },
+    {
+      "id": "affiliate-001",
+      "name": "Affiliate User",
+      "email": "affiliate@signauthentics.com",
+      "role": "affiliate",
+      "status": "active",
+      "avatar": null,
+      "department": "Marketing",
+      "joinedAt": "2024-01-01T00:00:00Z",
+      "lastLoginAt": "2024-01-23T14:20:00Z"
+    }
+  ],
+  "customers": [
+    {
+      "id": "cust-001",
+      "name": "Nguyễn Văn A",
+      "email": "nguyenvana@email.com",
+      "phone": "+84901234567",
+      "avatar": null,
+      "status": "active",
+      "membershipTier": "gold",
+      "loyaltyPoints": 1500,
+      "referralCode": "NVA123",
+      "shippingAddresses": [
+        {
+          "id": "addr-001",
+          "label": "Home",
+          "fullAddress": "123 Nguyen Hue, Q1, HCMC",
+          "isDefault": true
+        },
+        {
+          "id": "addr-002",
+          "label": "Office",
+          "fullAddress": "456 Le Loi, Q1, HCMC",
+          "isDefault": false
+        }
+      ],
+      "billingInfo": {
+        "cardLast4": "4242",
+        "cardType": "visa"
+      },
+      "preferences": {
+        "newsletter": true,
+        "smsNotifications": false,
+        "favoriteCategories": ["Jersey", "Ball"]
+      },
+      "totalOrders": 15,
+      "totalSpent": 45000000,
+      "totalBids": 8,
+      "wonAuctions": 3,
+      "wishlist": ["p1", "p3", "p5"],
+      "joinedAt": "2024-01-01T10:00:00Z",
+      "lastLoginAt": "2024-01-25T14:30:00Z",
+      "bannedAt": null,
+      "bannedReason": null
+    },
+    {
+      "id": "cust-002",
+      "name": "Trần Thị B",
+      "email": "tranthib@email.com",
+      "phone": "+84987654321",
+      "avatar": null,
+      "status": "active",
+      "membershipTier": "silver",
+      "loyaltyPoints": 850,
+      "referralCode": "TTB456",
+      "shippingAddresses": [
+        {
+          "id": "addr-003",
+          "label": "Home",
+          "fullAddress": "789 Dong Khoi, Q1, HCMC",
+          "isDefault": true
+        }
+      ],
+      "billingInfo": {
+        "cardLast4": "5555",
+        "cardType": "mastercard"
+      },
+      "preferences": {
+        "newsletter": false,
+        "smsNotifications": true,
+        "favoriteCategories": ["Photo", "Boots"]
+      },
+      "totalOrders": 8,
+      "totalSpent": 22500000,
+      "totalBids": 5,
+      "wonAuctions": 1,
+      "wishlist": ["p2", "p4"],
+      "joinedAt": "2024-01-05T15:20:00Z",
+      "lastLoginAt": "2024-01-24T09:15:00Z",
+      "bannedAt": null,
+      "bannedReason": null
+    },
+    {
+      "id": "cust-003",
+      "name": "Lê Văn C",
+      "email": "levanc@email.com",
+      "phone": "+84911223344",
+      "avatar": null,
+      "status": "active",
+      "membershipTier": "bronze",
+      "loyaltyPoints": 320,
+      "referralCode": "LVC789",
+      "shippingAddresses": [
+        {
+          "id": "addr-004",
+          "label": "Home",
+          "fullAddress": "321 Pasteur, Q3, HCMC",
+          "isDefault": true
+        }
+      ],
+      "billingInfo": null,
+      "preferences": {
+        "newsletter": true,
+        "smsNotifications": false,
+        "favoriteCategories": ["Jersey"]
+      },
+      "totalOrders": 3,
+      "totalSpent": 12500000,
+      "totalBids": 2,
+      "wonAuctions": 0,
+      "wishlist": ["p1", "p5"],
+      "joinedAt": "2024-01-10T08:45:00Z",
+      "lastLoginAt": "2024-01-23T16:30:00Z",
+      "bannedAt": null,
+      "bannedReason": null
+    },
+    {
+      "id": "cust-004",
+      "name": "Phạm Thị D",
+      "email": "phamthid@email.com",
+      "phone": "+84955667788",
+      "avatar": null,
+      "status": "banned",
+      "membershipTier": "bronze",
+      "loyaltyPoints": 0,
+      "referralCode": "PTD101",
+      "shippingAddresses": [
+        {
+          "id": "addr-005",
+          "label": "Home",
+          "fullAddress": "654 Vo Van Tan, Q3, HCMC",
+          "isDefault": true
+        }
+      ],
+      "billingInfo": {
+        "cardLast4": "1234",
+        "cardType": "visa"
+      },
+      "preferences": {
+        "newsletter": false,
+        "smsNotifications": true,
+        "favoriteCategories": ["Ball", "Other"]
+      },
+      "totalOrders": 1,
+      "totalSpent": 5000000,
+      "totalBids": 0,
+      "wonAuctions": 0,
+      "wishlist": [],
+      "joinedAt": "2024-01-15T12:00:00Z",
+      "lastLoginAt": "2024-01-20T10:30:00Z",
+      "bannedAt": "2024-01-21T14:00:00Z",
+      "bannedReason": "Fraudulent activity"
+    },
+    {
+      "id": "cust-005",
+      "name": "Hoàng Văn E",
+      "email": "hoangvane@email.com",
+      "phone": "+84999888777",
+      "avatar": null,
+      "status": "active",
+      "membershipTier": "platinum",
+      "loyaltyPoints": 2500,
+      "referralCode": "HVE202",
+      "shippingAddresses": [
+        {
+          "id": "addr-006",
+          "label": "Home",
+          "fullAddress": "987 Hai Ba Trung, Q1, HCMC",
+          "isDefault": true
+        },
+        {
+          "id": "addr-007",
+          "label": "Villa",
+          "fullAddress": "456 Tran Hung Dao, Q1, HCMC",
+          "isDefault": false
+        }
+      ],
+      "billingInfo": {
+        "cardLast4": "8888",
+        "cardType": "visa"
+      },
+      "preferences": {
+        "newsletter": true,
+        "smsNotifications": true,
+        "favoriteCategories": ["Jersey", "Boots", "Ball"]
+      },
+      "totalOrders": 25,
+      "totalSpent": 125000000,
+      "totalBids": 15,
+      "wonAuctions": 8,
+      "wishlist": ["p3", "p6", "p7"],
+      "joinedAt": "2023-11-01T09:00:00Z",
+      "lastLoginAt": "2024-01-25T11:45:00Z",
+      "bannedAt": null,
+      "bannedReason": null
+    }
+  ],
+  "articles": [
+    {
+      "id": "art-001",
+      "title": "Vietnam National Team Jersey Collection 2024",
+      "slug": "vietnam-national-team-jersey-collection-2024",
+      "content": "The Vietnam National Team has unveiled their new jersey collection for 2024, featuring innovative design elements and premium materials...",
+      "excerpt": "Discover the latest Vietnam National Team jersey collection with exclusive signed pieces from your favorite players.",
+      "author": "SignAuthentics Team",
+      "category": "News",
+      "status": "published",
+      "featuredImage": "/PlayerImages/chandung22tuyenthu1.jpg",
+      "tags": ["jersey", "vietnam", "national-team", "2024"],
+      "publishedAt": "2024-01-20T10:00:00Z",
+      "createdAt": "2024-01-19T14:00:00Z",
+      "updatedAt": "2024-01-20T10:00:00Z",
+      "views": 1250,
+      "likes": 89
+    },
+    {
+      "id": "art-002",
+      "title": "Quang Hải's Journey to Stardom",
+      "slug": "quang-hai-journey-to-stardom",
+      "content": "From a young boy in Nam Định to becoming Vietnam's football icon, Quang Hải's journey is nothing short of inspirational...",
+      "excerpt": "Follow the incredible journey of Quang Hải from his humble beginnings to becoming Vietnam's football superstar.",
+      "author": "Sports Writer",
+      "category": "Player Profile",
+      "status": "published",
+      "featuredImage": "/PlayerImages/QuangHai.jpeg",
+      "tags": ["quang-hai", "player-profile", "vietnam-football", "inspiration"],
+      "publishedAt": "2024-01-18T15:30:00Z",
+      "createdAt": "2024-01-17T09:00:00Z",
+      "updatedAt": "2024-01-18T15:30:00Z",
+      "views": 2100,
+      "likes": 156
+    },
+    {
+      "id": "art-003",
+      "title": "How to Authenticate Signed Memorabilia",
+      "slug": "how-to-authenticate-signed-memorabilia",
+      "content": "When purchasing signed memorabilia, it's crucial to ensure authenticity. Here are our expert tips for verifying signed items...",
+      "excerpt": "Learn how to verify the authenticity of signed sports memorabilia with our comprehensive guide.",
+      "author": "Authentication Expert",
+      "category": "Guide",
+      "status": "published",
+      "featuredImage": "/PlayerImages/chandung22tuyenthu2.jpg",
+      "tags": ["authentication", "memorabilia", "guide", "tips"],
+      "publishedAt": "2024-01-15T12:00:00Z",
+      "createdAt": "2024-01-14T16:00:00Z",
+      "updatedAt": "2024-01-15T12:00:00Z",
+      "views": 890,
+      "likes": 67
+    }
+  ],
+  "affiliates": [
+    {
+      "id": "aff-001",
+      "name": "Sports Blog Vietnam",
+      "email": "contact@sportsblogvn.com",
+      "code": "SPORTSBLOG10",
+      "commissionRate": 5.0,
+      "totalSales": 25000000,
+      "totalCommission": 1250000,
+      "status": "active",
+      "joinedAt": "2024-01-01T00:00:00Z",
+      "lastActivityAt": "2024-01-22T10:30:00Z",
+      "referralCount": 45
+    },
+    {
+      "id": "aff-002",
+      "name": "Football Fan Club",
+      "email": "admin@footballfanclub.vn",
+      "code": "FOOTBALL15",
+      "commissionRate": 7.5,
+      "totalSales": 18000000,
+      "totalCommission": 1350000,
+      "status": "active",
+      "joinedAt": "2024-01-05T00:00:00Z",
+      "lastActivityAt": "2024-01-23T14:20:00Z",
+      "referralCount": 32
+    },
+    {
+      "id": "aff-003",
+      "name": "Memorabilia Collector",
+      "email": "collector@memorabilia.com",
+      "code": "COLLECTOR20",
+      "commissionRate": 10.0,
+      "totalSales": 12000000,
+      "totalCommission": 1200000,
+      "status": "inactive",
+      "joinedAt": "2023-12-20T00:00:00Z",
+      "lastActivityAt": "2024-01-10T09:15:00Z",
+      "referralCount": 18
+    }
+  ]
+}

@@ -1,6 +1,5 @@
 ---
-globs: *tsx
-alwaysApply: false
+alwaysApply: true
 ---
 # Rule: shadcn guard
 # Type: Contextual

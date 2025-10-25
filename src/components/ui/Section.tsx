@@ -1,35 +1,19 @@
-import * as React from "react";
+import * as React from "react"
+import { cn } from "@/lib/utils"
 
-type SectionProps = React.PropsWithChildren<{
-  title?: string;
-  subtitle?: string;
-  className?: string;
-  container?: boolean;
-  titleAlign?: "left" | "center";
-}>;
+interface SectionProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode
+}
 
-export function Section({ title, subtitle, className, container = true, titleAlign = "left", children }: SectionProps) {
+export function Section({ children, className, ...props }: SectionProps) {
   return (
-    <section className={["py-8 md:py-12", className].filter(Boolean).join(" ")}>
-      <div className={container ? "max-w-screen-2xl mx-auto px-4 md:px-6" : undefined}>
-        {title && (
-          <div className={`mb-6 ${titleAlign === "center" ? "text-center" : ""}`}>
-            <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
-              {title}
-            </h2>
-            {subtitle && (
-              <p className="mt-2 text-sm md:text-base text-zinc-600 dark:text-zinc-400">
-                {subtitle}
-              </p>
-            )}
-          </div>
-        )}
-        {children}
-      </div>
-    </section>
-  );
+    <div
+      className={cn("py-8", className)}
+      {...props}
+    >
+      {children}
+    </div>
+  )
 }
 
 export default Section;
-
-

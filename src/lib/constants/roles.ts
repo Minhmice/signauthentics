@@ -15,6 +15,7 @@ export const ROLE_PERMISSIONS: Record<string, RolePermissions> = {
       auctions: 'full',
       vouchers: 'full',
       users: 'full',
+      customers: 'full',
       affiliates: 'full',
       content: 'full',
       reports: 'full',
@@ -24,12 +25,13 @@ export const ROLE_PERMISSIONS: Record<string, RolePermissions> = {
   seller: {
     role: 'seller',
     modules: {
-      overview: 'own-only', // Chỉ doanh thu và đơn của mình
+      overview: 'hidden',
       products: 'own-only',
       orders: 'own-only',
       auctions: 'own-only',
       vouchers: 'own-only',
       users: 'hidden',
+      customers: 'full',
       affiliates: 'hidden',
       content: 'read-only',
       reports: 'own-only',
@@ -45,6 +47,7 @@ export const ROLE_PERMISSIONS: Record<string, RolePermissions> = {
       auctions: 'hidden',
       vouchers: 'hidden',
       users: 'hidden',
+      customers: 'hidden',
       affiliates: 'hidden',
       content: 'full',
       reports: 'hidden',
@@ -60,6 +63,7 @@ export const ROLE_PERMISSIONS: Record<string, RolePermissions> = {
       auctions: 'hidden',
       vouchers: 'own-only', // My Vouchers
       users: 'hidden',
+      customers: 'hidden',
       affiliates: 'hidden',
       content: 'hidden',
       reports: 'hidden',
@@ -69,12 +73,13 @@ export const ROLE_PERMISSIONS: Record<string, RolePermissions> = {
   affiliate: {
     role: 'affiliate',
     modules: {
-      overview: 'own-only', // Chỉ số của riêng họ
+      overview: 'hidden',
       products: 'hidden',
       orders: 'hidden',
       auctions: 'hidden',
       vouchers: 'hidden',
       users: 'hidden',
+      customers: 'own-only', // Chỉ xem customers từ referral/orders của họ
       affiliates: 'own-only', // Ref Links, Clicks, Conversions
       content: 'read-only',
       reports: 'own-only',
@@ -89,7 +94,8 @@ export const NAVIGATION_ITEMS = [
   { id: 'orders', label: 'Orders', icon: 'ShoppingCart', href: '/dashboard/orders' },
   { id: 'auctions', label: 'Auctions', icon: 'Gavel', href: '/dashboard/auctions' },
   { id: 'vouchers', label: 'Vouchers', icon: 'Ticket', href: '/dashboard/vouchers' },
-  { id: 'users', label: 'Users', icon: 'Users', href: '/dashboard/users' },
+  { id: 'users', label: 'Users', icon: 'UserCog', href: '/dashboard/users' },
+  { id: 'customers', label: 'Customers', icon: 'Users', href: '/dashboard/customers' },
   { id: 'affiliates', label: 'Affiliates', icon: 'Link', href: '/dashboard/affiliates' },
   { id: 'content', label: 'Content', icon: 'FileText', href: '/dashboard/blog' },
   { id: 'reports', label: 'Reports', icon: 'BarChart3', href: '/dashboard/reports' },

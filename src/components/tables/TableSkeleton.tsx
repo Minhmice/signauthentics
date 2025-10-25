@@ -14,7 +14,7 @@ export function TableSkeleton({ rows = 5, cols = 5 }: TableSkeletonProps) {
           <tr>
             {Array.from({ length: cols }).map((_, i) => (
               <th key={i} className="p-3 text-xs font-medium text-gray-600">
-                <WireBox label={`Header ${i + 1}`} className="h-6" />
+                <WireBox className="h-6">Header {i + 1}</WireBox>
               </th>
             ))}
           </tr>
@@ -24,7 +24,7 @@ export function TableSkeleton({ rows = 5, cols = 5 }: TableSkeletonProps) {
             <tr key={r} className="border-t border-dashed border-gray-300">
               {Array.from({ length: cols }).map((_, c) => (
                 <td key={c} className="p-3">
-                  <WireBox label={`Cell`} className="h-6" />
+                  <WireBox className="h-6">Cell</WireBox>
                 </td>
               ))}
             </tr>

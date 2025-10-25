@@ -1,185 +1,356 @@
 "use client";
 
 /**
- * Affiliates Module Page
- * Wireframe cho affiliate tracking & payouts
- * Affiliate: Own data, Admin: All data
+ * Affiliates Management Page
+ * Full CRUD operations với commission tracking và sales stats
  */
 
-import { DashboardSectionHeader } from "@/components/dashboard/RoleBadge";
-import { KPICard, KPIGrid } from "@/components/dashboard/KPICard";
-import { DataTable } from "@/components/dashboard/DataTable";
-import { Card, CardContent } from "@/components/ui/card";
+import * as React from "react";
+import { DashboardSectionHeader } from '@/app/dashboard/components/shared/RoleBadge';
+import { DataTable } from "@/app/dashboard/components/shared/DataTable";
+import { ConfirmDialog } from '@/app/dashboard/components/shared/ConfirmDialog';
+import { FilterPopover, FilterOption } from '@/app/dashboard/components/shared/FilterPopover';
+import { ActionMenu, createActionItems } from '@/app/dashboard/components/shared/ActionMenu';
+import { StatusBadge } from '@/app/dashboard/components/shared/StatusBadge';
 import { Button } from "@/components/ui/button";
-import { Plus, Copy, MousePointerClick, TrendingUp, DollarSign, Users } from "lucide-react";
+import { Plus, Trash2, Users, DollarSign, Eye } from "lucide-react";
+import { affiliatesAPI, type Affiliate } from "@/lib/mock/db";
 import { formatPrice } from "@/lib/ui/price";
 import { ColumnDef } from "@tanstack/react-table";
+import { toast } from "sonner";
 
-type RefLink = {
-  id: string;
-  link: string;
-  channel: string;
-  clicks: number;
-  conversions: number;
-  revenue: number;
-  createdAt: string;
-};
-
-type AffiliateLog = {
-  id: string;
-  event: string;
-  customer: string;
-  product: string;
-  revenue: number;
-  commission: number;
-  timestamp: string;
-};
-
-const mockRefLinks: RefLink[] = [
-  { id: "REF-001", link: "signauthentics.vn?ref=summer2024", channel: "Facebook", clicks: 1250, conversions: 35, revenue: 87500000, createdAt: "2024-01-01" },
-  { id: "REF-002", link: "signauthentics.vn?ref=ig_sports", channel: "Instagram", clicks: 980, conversions: 28, revenue: 70000000, createdAt: "2024-01-05" },
-  { id: "REF-003", link: "signauthentics.vn?ref=yt_review", channel: "YouTube", clicks: 2100, conversions: 52, revenue: 130000000, createdAt: "2024-01-10" },
-];
-
-const mockLogs: AffiliateLog[] = [
-  { id: "LOG-001", event: "conversion", customer: "Nguyễn Văn A", product: "Signed Jersey #10", revenue: 2500000, commission: 250000, timestamp: "5m ago" },
-  { id: "LOG-002", event: "conversion", customer: "Trần Thị B", product: "Signed Ball", revenue: 5000000, commission: 500000, timestamp: "15m ago" },
-  { id: "LOG-003", event: "click", customer: "Anonymous", product: "-", revenue: 0, commission: 0, timestamp: "30m ago" },
-];
-
-const refLinkColumns: ColumnDef<RefLink>[] = [
+// Filter options for affiliates
+const filterOptions: FilterOption[] = [
   {
-    accessorKey: "link",
-    header: "Ref Link",
-    cell: ({ row }) => (
-      <div className="flex items-center gap-2">
-        <span className="font-mono text-xs truncate max-w-xs">{row.original.link}</span>
-        <button className="p-1 hover:bg-zinc-800 rounded" title="Copy link">
-          <Copy className="w-3.5 h-3.5 text-zinc-400" />
-        </button>
-      </div>
-    ),
+    key: "status",
+    label: "Status",
+    type: "select",
+    options: [
+      { value: "active", label: "Active" },
+      { value: "inactive", label: "Inactive" },
+    ],
   },
   {
-    accessorKey: "channel",
-    header: "Channel",
-    cell: ({ row }) => <span className="px-2 py-1 bg-blue-500/10 text-blue-500 text-xs rounded">{row.original.channel}</span>,
+    key: "commissionRange",
+    label: "Commission Rate",
+    type: "number",
+    placeholder: "Min commission %",
   },
   {
-    accessorKey: "clicks",
-    header: "Clicks",
-    cell: ({ row }) => (
-      <span className="inline-flex items-center gap-1 text-sm">
-        <MousePointerClick className="w-3.5 h-3.5 text-zinc-500" />
-        {row.original.clicks.toLocaleString()}
-      </span>
-    ),
+    key: "salesRange",
+    label: "Total Sales",
+    type: "number",
+    placeholder: "Min sales amount",
   },
   {
-    accessorKey: "conversions",
-    header: "Conversions",
-    cell: ({ row }) => <span className="font-semibold text-green-500">{row.original.conversions}</span>,
+    key: "referralRange",
+    label: "Referrals",
+    type: "number",
+    placeholder: "Min referrals",
   },
-  {
-    accessorKey: "revenue",
-    header: "Revenue",
-    cell: ({ row }) => <span className="font-semibold">{formatPrice(row.original.revenue, "VND")}</span>,
-  },
-  {
-    accessorKey: "createdAt",
-    header: "Created",
-    cell: ({ row }) => <span className="text-xs text-zinc-400">{new Date(row.original.createdAt).toLocaleDateString("vi-VN")}</span>,
-  },
-];
-
-const logColumns: ColumnDef<AffiliateLog>[] = [
-  {
-    accessorKey: "event",
-    header: "Event",
-    cell: ({ row }) => {
-      const event = row.original.event;
-      const colorMap = {
-        conversion: "bg-green-500/10 text-green-500",
-        click: "bg-blue-500/10 text-blue-500",
-      };
-      return (
-        <span className={`px-2 py-1 text-xs rounded-full ${colorMap[event as keyof typeof colorMap]}`}>
-          {event.charAt(0).toUpperCase() + event.slice(1)}
-        </span>
-      );
-    },
-  },
-  { accessorKey: "customer", header: "Customer" },
-  { accessorKey: "product", header: "Product" },
-  {
-    accessorKey: "commission",
-    header: "Commission",
-    cell: ({ row }) => (
-      <span className="font-semibold text-green-500">
-        {row.original.commission > 0 ? formatPrice(row.original.commission, "VND") : "-"}
-      </span>
-    ),
-  },
-  { accessorKey: "timestamp", header: "Time", cell: ({ row }) => <span className="text-xs text-zinc-400">{row.original.timestamp}</span> },
 ];
 
 export default function DashboardAffiliatesPage() {
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
+  const [affiliates, setAffiliates] = React.useState<Affiliate[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [filters, setFilters] = React.useState<Record<string, unknown>>({});
+  const [deleteAffiliateId, setDeleteAffiliateId] = React.useState<string | null>(null);
+
+  // Load affiliates
+  React.useEffect(() => {
+    loadAffiliates();
+  }, [filters]);
+
+  const loadAffiliates = async () => {
+    try {
+      setLoading(true);
+      const data = await affiliatesAPI.getAll();
+      setAffiliates(data.filter((affiliate): affiliate is Affiliate => affiliate !== null));
+    } catch (error) {
+      toast.error("Failed to load affiliates");
+      console.error("Error loading affiliates:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleView = (affiliate: Affiliate) => {
+    console.log("View affiliate:", affiliate.id);
+    // TODO: Open affiliate detail modal
+  };
+
+  const handleEdit = (affiliate: Affiliate) => {
+    console.log("Edit affiliate:", affiliate.id);
+    // TODO: Open affiliate edit modal
+  };
+
+  const handleDelete = (affiliateId: string) => {
+    setDeleteAffiliateId(affiliateId);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteAffiliateId) return;
+    
+    try {
+      await affiliatesAPI.delete(deleteAffiliateId);
+      setAffiliates(affiliates.filter(a => a.id !== deleteAffiliateId));
+      toast.success("Affiliate deleted successfully");
+    } catch (error) {
+      toast.error("Failed to delete affiliate");
+      console.error("Error deleting affiliate:", error);
+    } finally {
+      setIsDeleteDialogOpen(false);
+      setDeleteAffiliateId(null);
+    }
+  };
+
+  const handleBulkDelete = async (selectedIds: string[]) => {
+    try {
+      await affiliatesAPI.bulkDelete(selectedIds);
+      setAffiliates(affiliates.filter(a => !selectedIds.includes(a.id)));
+      toast.success(`${selectedIds.length} affiliates deleted successfully`);
+    } catch (error) {
+      toast.error("Failed to delete affiliates");
+      console.error("Error deleting affiliates:", error);
+    }
+  };
+
+  const handleToggleStatus = async (affiliateId: string) => {
+    try {
+      const affiliate = affiliates.find(a => a.id === affiliateId);
+      if (!affiliate) return;
+
+      const newStatus = affiliate.status === 'active' ? 'inactive' : 'active';
+      const updatedAffiliate = await affiliatesAPI.update(affiliateId, { status: newStatus });
+      setAffiliates(affiliates.map(a => a.id === affiliateId ? updatedAffiliate : a).filter(Boolean) as typeof affiliates);
+      toast.success(`Affiliate ${newStatus === 'active' ? 'activated' : 'deactivated'}`);
+    } catch (error) {
+      toast.error("Failed to update affiliate status");
+      console.error("Error updating affiliate status:", error);
+    }
+  };
+
+  const handleCommissionUpdate = async (affiliateId: string, newRate: number) => {
+    try {
+      const updatedAffiliate = await affiliatesAPI.update(affiliateId, { commissionRate: newRate });
+      setAffiliates(affiliates.map(a => a.id === affiliateId ? updatedAffiliate : a).filter(Boolean) as typeof affiliates);
+      toast.success(`Commission rate updated to ${newRate}%`);
+    } catch (error) {
+      toast.error("Failed to update commission rate");
+      console.error("Error updating commission rate:", error);
+    }
+  };
+
+  const handleExport = (format: string, data: Affiliate[]) => {
+    toast.success(`Exported ${data.length} affiliates as ${format.toUpperCase()}`);
+  };
+
+  const affiliateColumns: ColumnDef<Affiliate>[] = [
+    {
+      accessorKey: "name",
+      header: "Affiliate",
+      cell: ({ row }) => (
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-zinc-800 rounded-full flex items-center justify-center">
+            <Users className="w-4 h-4 text-zinc-400" />
+          </div>
+          <div>
+            <div className="font-medium">{row.original.name}</div>
+            <div className="text-xs text-zinc-500">{row.original.email}</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "code",
+      header: "Code",
+      cell: ({ row }) => (
+        <span className="font-mono text-sm bg-zinc-800 px-2 py-1 rounded">
+          {row.original.code}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "commissionRate",
+      header: "Commission",
+      cell: ({ row }) => (
+        <div className="text-sm font-medium">
+          {row.original.commissionRate}%
+        </div>
+      ),
+    },
+    {
+      accessorKey: "totalSales",
+      header: "Total Sales",
+      cell: ({ row }) => (
+        <div className="text-sm text-right">
+          <div className="font-medium">{formatPrice(row.original.totalSales, "VND")}</div>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "totalCommission",
+      header: "Commission Earned",
+      cell: ({ row }) => (
+        <div className="text-sm text-right">
+          <div className="font-medium text-green-500">{formatPrice(row.original.totalCommission, "VND")}</div>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "referralCount",
+      header: "Referrals",
+      cell: ({ row }) => (
+        <div className="text-sm text-center">
+          <div className="font-medium">{row.original.referralCount}</div>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => <StatusBadge status={row.original.status} />,
+    },
+    {
+      accessorKey: "joinedAt",
+      header: "Joined",
+      cell: ({ row }) => (
+        <div className="text-sm">
+          {new Date(row.original.joinedAt).toLocaleDateString()}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "lastActivityAt",
+      header: "Last Activity",
+      cell: ({ row }) => (
+        <div className="text-sm">
+          {row.original.lastActivityAt 
+            ? new Date(row.original.lastActivityAt).toLocaleDateString()
+            : "Never"
+          }
+        </div>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => (
+        <ActionMenu
+          actions={createActionItems(
+            () => handleEdit(row.original),
+            () => handleDelete(row.original.id),
+            () => handleView(row.original)
+          )}
+        />
+      ),
+    },
+  ];
+
+  const bulkActions = [
+    {
+      id: "bulk-activate",
+      label: "Activate Selected",
+      icon: <Users className="w-4 h-4" />,
+      variant: "default" as const,
+      onClick: (selectedIds: string[]) => {
+        selectedIds.forEach(id => handleToggleStatus(id));
+      },
+    },
+    {
+      id: "bulk-delete",
+      label: "Delete Selected",
+      icon: <Trash2 className="w-4 h-4" />,
+      variant: "destructive" as const,
+      onClick: handleBulkDelete,
+    },
+  ];
+
+  // Calculate totals
+  const totalSales = affiliates.reduce((sum, a) => sum + a.totalSales, 0);
+  const totalCommission = affiliates.reduce((sum, a) => sum + a.totalCommission, 0);
+  const totalReferrals = affiliates.reduce((sum, a) => sum + a.referralCount, 0);
+
   return (
     <div className="space-y-6">
       <DashboardSectionHeader
         title="Affiliates"
-        description="Affiliate tracking & commission management"
-        visibleFor={["admin", "affiliate"]}
-        ownOnlyFor={["affiliate"]}
+        description={`Quản lý đối tác - ${affiliates.length} affiliates total`}
+        visibleFor={["admin"]}
+        readOnlyFor={["seller", "editor"]}
+        actions={
+          <div className="flex items-center gap-2">
+            <FilterPopover
+              filters={filterOptions}
+              values={filters}
+              onValuesChange={setFilters}
+              onClear={() => setFilters({})}
+            />
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Affiliate
+            </Button>
+          </div>
+        }
       />
 
-      {/* KPIs */}
-      <KPIGrid columns={4}>
-        <KPICard label="Total Clicks" value="4,330" change="+18%" trend="up" icon={MousePointerClick} iconColor="text-blue-500" />
-        <KPICard label="Conversions" value="115" change="+12%" trend="up" icon={TrendingUp} iconColor="text-green-500" />
-        <KPICard label="Total Sales" value="₫287.5M" change="+24%" trend="up" icon={DollarSign} iconColor="text-purple-500" />
-        <KPICard label="Payout Pending" value="₫28.75M" change="" trend="neutral" icon={Users} iconColor="text-orange-500" description="10% commission" />
-      </KPIGrid>
-
-      {/* Ref Links */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wide">Referral Links</h2>
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-            <Plus className="w-4 h-4 mr-2" />
-            Create Link
-          </Button>
-        </div>
-        <DataTable columns={refLinkColumns} data={mockRefLinks} searchKey="channel" searchPlaceholder="Search by channel..." showPagination={false} />
-      </div>
-
-      {/* Activity Logs */}
-      <div>
-        <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wide mb-4">Activity Logs</h2>
-        <DataTable columns={logColumns} data={mockLogs} showPagination={false} showExport={false} />
-      </div>
-
-      {/* Payout Info */}
-      <Card className="bg-zinc-900 border-zinc-800">
-        <CardContent className="p-6">
-          <h3 className="text-sm font-semibold text-white mb-4">Payout Schedule</h3>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="p-4 bg-zinc-800/50 rounded-lg">
-              <div className="text-xs text-zinc-500 mb-1">Commission Rate</div>
-              <div className="text-xl font-bold text-white">10%</div>
-            </div>
-            <div className="p-4 bg-zinc-800/50 rounded-lg">
-              <div className="text-xs text-zinc-500 mb-1">Payout Cycle</div>
-              <div className="text-xl font-bold text-white">Monthly</div>
-            </div>
-            <div className="p-4 bg-zinc-800/50 rounded-lg">
-              <div className="text-xs text-zinc-500 mb-1">Next Payout</div>
-              <div className="text-xl font-bold text-green-500">Feb 1, 2024</div>
-            </div>
+      {/* Affiliates Summary */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+          <div className="flex items-center gap-2">
+            <Users className="w-5 h-5 text-blue-500" />
+            <span className="text-sm font-medium text-zinc-300">Total Affiliates</span>
           </div>
-        </CardContent>
-      </Card>
+          <div className="text-2xl font-bold text-white mt-1">{affiliates.length}</div>
+        </div>
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+          <div className="flex items-center gap-2">
+            <DollarSign className="w-5 h-5 text-green-500" />
+            <span className="text-sm font-medium text-zinc-300">Total Sales</span>
+          </div>
+          <div className="text-2xl font-bold text-white mt-1">{formatPrice(totalSales, "VND")}</div>
+        </div>
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+          <div className="flex items-center gap-2">
+            <DollarSign className="w-5 h-5 text-purple-500" />
+            <span className="text-sm font-medium text-zinc-300">Commission Paid</span>
+          </div>
+          <div className="text-2xl font-bold text-white mt-1">{formatPrice(totalCommission, "VND")}</div>
+        </div>
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+          <div className="flex items-center gap-2">
+            <Users className="w-5 h-5 text-orange-500" />
+            <span className="text-sm font-medium text-zinc-300">Total Referrals</span>
+          </div>
+          <div className="text-2xl font-bold text-white mt-1">{totalReferrals}</div>
+        </div>
+      </div>
+
+      {/* Affiliates Table */}
+      <DataTable
+        columns={affiliateColumns}
+        data={affiliates}
+        searchKey="name"
+        searchPlaceholder="Search affiliates..."
+        pageSize={10}
+        loading={loading}
+        getRowId={(row) => row.id}
+        bulkActions={bulkActions}
+        onExport={handleExport}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        title="Delete Affiliate"
+        description="Are you sure you want to delete this affiliate? This action cannot be undone."
+        confirmText="Delete"
+        onConfirm={confirmDelete}
+        variant="destructive"
+      />
     </div>
   );
 }
-

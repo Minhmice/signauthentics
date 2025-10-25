@@ -6,107 +6,19 @@
  * Admin: Full KPIs, Seller: Own-only, Others: Limited
  */
 
-import { DashboardSectionHeader } from "@/components/dashboard/RoleBadge";
-import { KPICard, KPIGrid } from "@/components/dashboard/KPICard";
+import { DashboardSectionHeader } from '@/app/dashboard/components/shared/RoleBadge';
+import { KPICard, KPIGrid } from '@/app/dashboard/components/KPICard';
 import { Card, CardContent } from "@/components/ui/card";
-import { DataTable } from "@/components/dashboard/DataTable";
-import { ChartPlaceholder, Sparkline } from "@/components/dashboard/ChartPlaceholder";
-import { DollarSign, ShoppingCart, Gavel, TrendingUp, Clock, Users, Package, Target } from "lucide-react";
-import { formatPrice } from "@/lib/ui/price";
-import { ColumnDef } from "@tanstack/react-table";
-
-// Mock data cho Live Auctions
-type LiveAuction = {
-  id: string;
-  product: string;
-  highestBid: number;
-  bidders: number;
-  endsIn: string;
-};
-
-const liveAuctions: LiveAuction[] = [
-  { id: "AUC-001", product: "Signed Jersey Quang Hải #19", highestBid: 8500000, bidders: 12, endsIn: "2h 30m" },
-  { id: "AUC-002", product: "Signed Ball Vietnam U22", highestBid: 4200000, bidders: 8, endsIn: "5h 15m" },
-  { id: "AUC-003", product: "Signed Boots Công Phượng", highestBid: 6700000, bidders: 15, endsIn: "1h 45m" },
-];
-
-// Mock data cho Latest Orders
-type LatestOrder = {
-  orderId: string;
-  buyer: string;
-  total: number;
-  payment: string;
-  fulfillment: string;
-  updated: string;
-};
-
-const latestOrders: LatestOrder[] = [
-  { orderId: "ORD-1234", buyer: "Nguyễn Văn A", total: 2500000, payment: "Paid", fulfillment: "Shipped", updated: "2m ago" },
-  { orderId: "ORD-1235", buyer: "Trần Thị B", total: 5000000, payment: "Pending", fulfillment: "Processing", updated: "5m ago" },
-  { orderId: "ORD-1236", buyer: "Lê Văn C", total: 1200000, payment: "Paid", fulfillment: "Delivered", updated: "10m ago" },
-  { orderId: "ORD-1237", buyer: "Phạm Thị D", total: 8500000, payment: "Paid", fulfillment: "Shipped", updated: "15m ago" },
-];
-
-const auctionColumns: ColumnDef<LiveAuction>[] = [
-  { accessorKey: "product", header: "Product" },
-  {
-    accessorKey: "highestBid",
-    header: "Highest Bid",
-    cell: ({ row }) => formatPrice(row.original.highestBid, "VND"),
-  },
-  { accessorKey: "bidders", header: "Bidders" },
-  {
-    accessorKey: "endsIn",
-    header: "Ends In",
-    cell: ({ row }) => (
-      <span className="flex items-center gap-1 text-orange-500">
-        <Clock className="w-3.5 h-3.5" />
-        {row.original.endsIn}
-      </span>
-    ),
-  },
-];
-
-const orderColumns: ColumnDef<LatestOrder>[] = [
-  { accessorKey: "orderId", header: "Order ID" },
-  { accessorKey: "buyer", header: "Buyer" },
-  {
-    accessorKey: "total",
-    header: "Total",
-    cell: ({ row }) => formatPrice(row.original.total, "VND"),
-  },
-  {
-    accessorKey: "payment",
-    header: "Payment",
-    cell: ({ row }) => (
-      <span
-        className={`px-2 py-1 text-xs rounded-full ${
-          row.original.payment === "Paid" ? "bg-green-500/10 text-green-500" : "bg-orange-500/10 text-orange-500"
-        }`}
-      >
-        {row.original.payment}
-      </span>
-    ),
-  },
-  {
-    accessorKey: "fulfillment",
-    header: "Fulfillment",
-    cell: ({ row }) => {
-      const status = row.original.fulfillment;
-      const colorMap: Record<string, string> = {
-        Delivered: "bg-green-500/10 text-green-500",
-        Shipped: "bg-blue-500/10 text-blue-500",
-        Processing: "bg-orange-500/10 text-orange-500",
-      };
-      return <span className={`px-2 py-1 text-xs rounded-full ${colorMap[status] || "bg-zinc-500/10 text-zinc-500"}`}>{status}</span>;
-    },
-  },
-  { accessorKey: "updated", header: "Updated" },
-];
+import { ChartPlaceholder, Sparkline } from '@/app/dashboard/components/shared/ChartPlaceholder';
+import { LiveAuctionsTable } from '@/app/dashboard/components/LiveAuctionsTable';
+import { LatestOrdersTable } from '@/app/dashboard/components/LatestOrdersTable';
+import { DollarSign, ShoppingCart, Gavel, TrendingUp, Users, Package, Target } from "lucide-react";
+import { PageTransition } from "./components/PageTransition";
 
 export default function DashboardOverviewPage() {
   return (
-    <div className="space-y-8">
+    <PageTransition>
+      <div className="space-y-8">
       {/* Page Header với Role Visibility */}
       <DashboardSectionHeader
         title="Overview"
@@ -224,13 +136,13 @@ export default function DashboardOverviewPage() {
             (Features: sorting, column visibility, pin left/right, column resize, pagination)
           </span>
         </h2>
-        <DataTable columns={auctionColumns} data={liveAuctions} searchKey="product" showPagination={false} />
+        <LiveAuctionsTable />
       </div>
 
       {/* Latest Orders Table */}
       <div>
         <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wide mb-4">Latest Orders</h2>
-        <DataTable columns={orderColumns} data={latestOrders} searchKey="buyer" showPagination={false} />
+        <LatestOrdersTable />
       </div>
 
       {/* Top Players Spotlight */}
@@ -250,7 +162,8 @@ export default function DashboardOverviewPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+      </div>
+    </PageTransition>
   );
 }
 

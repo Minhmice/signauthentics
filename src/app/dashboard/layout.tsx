@@ -7,7 +7,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "../globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-import { DashboardWrapper } from "@/components/dashboard/DashboardWrapper";
+import { DashboardWrapper } from "./components/DashboardWrapper";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -30,17 +31,13 @@ export default function DashboardRootLayout({
   };
 
   return (
-    <html lang="en">
-      <body 
-        className={`${inter.variable} antialiased text-gray-900 bg-zinc-950`}
-        suppressHydrationWarning={true}
-      >
-        <ThemeProvider>
-          <DashboardWrapper userRole={currentUser.role} userName={currentUser.name} userAvatar={currentUser.avatar}>
-            {children}
-          </DashboardWrapper>
-        </ThemeProvider>
-      </body>
-    </html>
+    <div className={`${inter.variable} antialiased text-gray-900 bg-zinc-950 min-h-screen`}>
+      <ThemeProvider>
+        <DashboardWrapper userRole={currentUser.role} userName={currentUser.name} userAvatar={currentUser.avatar}>
+          {children}
+        </DashboardWrapper>
+        <Toaster theme="dark" />
+      </ThemeProvider>
+    </div>
   );
 }
